@@ -7,12 +7,12 @@ const execAsync = util.promisify(exec);
 
 /**
  * Printer Integration Module
- * Handles communication with system printer via CUPS/lp command
+ * Handles communication with system printer via CUPS/lp command on Raspberry Pi/Linux
  */
 
 // Printer configuration
 const PRINTER_CONFIG = {
-  name: 'HP_Ink_Tank_315',
+  name: 'Ink-Tank-310-series',
   defaultTimeout: 5000,
   retryAttempts: 3,
   retryDelay: 1000
@@ -137,6 +137,7 @@ async function getPrinterStatus() {
 
 /**
  * Submit a print job to the system printer
+ * Supports both Windows (using print command) and Linux (using lp command)
  * @param {string} documentPath - Path to document file
  * @param {Object} settings - Print settings
  * @param {string} settings.paperType - Paper type
@@ -157,7 +158,69 @@ async function submitJobToPrinter(documentPath, settings) {
       throw new Error('Invalid print settings');
     }
 
-    // Format printer options
+    // Use platform-specific submission
+    if (isWindows) {
+      return await submitJobToPrinterWindows(documentPath, settings);
+    } else if (isLinux) {
+      return await submitJobToPrinterLinux(documentPath, settings);
+    } else {
+      throw new Error(`Unsupported platform: ${os.platform()}`);
+    }
+  } catch (err) {
+    return {
+      success: false,
+      jobId: null,
+      message: `Failed to submit job to printer: ${err.message}`
+    };
+  }
+}
+
+/**
+ * Submit job to printer on Windows using print command
+ * @private
+ */
+async function submitJobToPrinterWindows(documentPath, settings) {
+  try {
+    // Windows print command: print /D:printerName filename
+    // Note: Windows print command has limited options compared to CUPS
+    const command = `print /D:"${PRINTER_CONFIG.name}" "${documentPath}"`;
+
+    try {
+      // Execute print command
+      const { stdout, stderr } = await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+
+      // Generate a job ID based on timestamp
+      const jobId = Math.floor(Date.now() / 1000).toString();
+
+      return {
+        success: true,
+        jobId,
+        message: `Job submitted successfully to printer. Job ID: ${jobId}`
+      };
+    } catch (execError) {
+      // Handle specific error cases
+      if (execError.message.includes('not found') || execError.message.includes('not recognized')) {
+        throw new Error('Printer not found or print command not available');
+      } else if (execError.message.includes('Access denied')) {
+        throw new Error('Permission denied. User may not have access to printer');
+      } else if (execError.message.includes('timeout')) {
+        throw new Error('Printer communication timeout');
+      } else {
+        throw new Error(`Printer submission failed: ${execError.message}`);
+      }
+    }
+  } catch (err) {
+    throw err;
+  }
+}
+
+/**
+ * Submit job to printer on Linux using lp command
+ * @private
+ */
+async function submitJobToPrinterLinux(documentPath, settings) {
+  try {
+    // Format printer options for CUPS
     const printerOptions = formatPrinterOptions(settings);
 
     // Build lp command
@@ -189,11 +252,7 @@ async function submitJobToPrinter(documentPath, settings) {
       }
     }
   } catch (err) {
-    return {
-      success: false,
-      jobId: null,
-      message: `Failed to submit job to printer: ${err.message}`
-    };
+    throw err;
   }
 }
 
