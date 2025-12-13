@@ -2,6 +2,7 @@ const { execSync, exec } = require('child_process');
 const util = require('util');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
 const execAsync = util.promisify(exec);
 
@@ -9,6 +10,10 @@ const execAsync = util.promisify(exec);
  * Printer Integration Module
  * Handles communication with system printer via CUPS/lp command on Raspberry Pi/Linux
  */
+
+// Detect platform
+const isWindows = os.platform() === 'win32';
+const isLinux = os.platform() === 'linux';
 
 // Printer configuration
 const PRINTER_CONFIG = {
@@ -148,25 +153,38 @@ async function getPrinterStatus() {
  */
 async function submitJobToPrinter(documentPath, settings) {
   try {
+    console.log(`[PRINTER] submitJobToPrinter called with path: ${documentPath}`);
+    console.log(`[PRINTER] Platform detected: ${os.platform()}`);
+    
     // Validate document exists
     if (!fs.existsSync(documentPath)) {
+      console.error(`[PRINTER] Document file not found: ${documentPath}`);
       throw new Error(`Document file not found: ${documentPath}`);
     }
 
+    console.log(`[PRINTER] Document file exists`);
+
     // Validate settings
     if (!settings || typeof settings !== 'object') {
+      console.error(`[PRINTER] Invalid print settings`);
       throw new Error('Invalid print settings');
     }
 
+    console.log(`[PRINTER] Settings validated`);
+
     // Use platform-specific submission
     if (isWindows) {
+      console.log(`[PRINTER] Using Windows submission`);
       return await submitJobToPrinterWindows(documentPath, settings);
     } else if (isLinux) {
+      console.log(`[PRINTER] Using Linux submission`);
       return await submitJobToPrinterLinux(documentPath, settings);
     } else {
+      console.error(`[PRINTER] Unsupported platform: ${os.platform()}`);
       throw new Error(`Unsupported platform: ${os.platform()}`);
     }
   } catch (err) {
+    console.error(`[PRINTER] Error in submitJobToPrinter: ${err.message}`);
     return {
       success: false,
       jobId: null,
@@ -220,19 +238,30 @@ async function submitJobToPrinterWindows(documentPath, settings) {
  */
 async function submitJobToPrinterLinux(documentPath, settings) {
   try {
+    console.log(`[PRINTER] Attempting to submit job: ${documentPath}`);
+    
     // Format printer options for CUPS
     const printerOptions = formatPrinterOptions(settings);
+    console.log(`[PRINTER] Formatted options: ${printerOptions}`);
 
     // Build lp command
     const command = `lp -d ${PRINTER_CONFIG.name} ${printerOptions} "${documentPath}"`;
+    console.log(`[PRINTER] Executing command: ${command}`);
 
     try {
       // Execute lp command
       const { stdout, stderr } = await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
 
-      // Parse job ID from output (typically "request id is HP_Ink_Tank_315-123 (1 file(s))")
+      console.log(`[PRINTER] Command stdout: ${stdout}`);
+      if (stderr) {
+        console.log(`[PRINTER] Command stderr: ${stderr}`);
+      }
+
+      // Parse job ID from output (typically "request id is Ink-Tank-310-series-123 (1 file(s))")
       const jobIdMatch = stdout.match(/request id is [\w\-]+-(\d+)/);
       const jobId = jobIdMatch ? jobIdMatch[1] : 'unknown';
+
+      console.log(`[PRINTER] Job submitted successfully with ID: ${jobId}`);
 
       return {
         success: true,
@@ -240,6 +269,8 @@ async function submitJobToPrinterLinux(documentPath, settings) {
         message: `Job submitted successfully to printer. Job ID: ${jobId}`
       };
     } catch (execError) {
+      console.error(`[PRINTER] Command execution error: ${execError.message}`);
+      
       // Handle specific error cases
       if (execError.message.includes('No such file or directory')) {
         throw new Error('Printer not found or CUPS not installed');
@@ -252,6 +283,7 @@ async function submitJobToPrinterLinux(documentPath, settings) {
       }
     }
   } catch (err) {
+    console.error(`[PRINTER] Error in submitJobToPrinterLinux: ${err.message}`);
     throw err;
   }
 }
