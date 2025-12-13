@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Print Job - Print Queue Manager</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .submit-card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .submit-card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h3 {
+      color: #667eea;
+      font-size: 16px;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .info-value {
+      color: #666;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 4px;
+    }
+
+    .setting-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .setting-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+
+    .setting-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .alert-error {
+      background: #fee;
+      color: #c33;
+      border: 1px solid #fcc;
+    }
+
+    .alert-success {
+      background: #efe;
+      color: #3c3;
+      border: 1px solid #cfc;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    @media (max-width: 600px) {
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Print Queue Manager</h1>
+      <div class="user-info">
+        <span>Submit Print Job</span>
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="submit-card">
+      <h2>Review and Submit Print Job</h2>
+
+      <% if (error) { %>
+        <div class="alert alert-error"><%= error %></div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="alert alert-success"><%= success %></div>
+      <% } %>
+
+      <form method="POST" action="/submit-job">
+        <div class="section">
+          <h3>Document Information</h3>
+          <div class="info-row">
+            <span class="info-label">File Name:</span>
+            <span class="info-value"><%= uploadedFile.originalName %></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">File Size:</span>
+            <span class="info-value"><%= (uploadedFile.size / 1024).toFixed(2) %> KB</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Uploaded:</span>
+            <span class="info-value"><%= new Date(uploadedFile.uploadedAt).toLocaleString() %></span>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Print Settings</h3>
+          <div class="settings-grid">
+            <div class="setting-item">
+              <span class="setting-label">Paper Type</span>
+              <span class="setting-value"><%= settings.paperType %></span>
+            </div>
+            <div class="setting-item">
+              <span class="setting-label">Print Quality</span>
+              <span class="setting-value"><%= settings.printQuality %> DPI</span>
+            </div>
+            <div class="setting-item">
+              <span class="setting-label">Color Mode</span>
+              <span class="setting-value"><%= settings.colorMode %></span>
+            </div>
+            <div class="setting-item">
+              <span class="setting-label">Paper Size</span>
+              <span class="setting-value"><%= settings.paperSize %></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn-primary">Submit to Printer</button>
+          <a href="/upload" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

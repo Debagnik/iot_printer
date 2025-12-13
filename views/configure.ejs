@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Configuration - Print Queue Manager</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .config-card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .config-card h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      background-color: white;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .alert-error {
+      background: #fee;
+      color: #c33;
+      border: 1px solid #fcc;
+    }
+
+    .alert-success {
+      background: #efe;
+      color: #3c3;
+      border: 1px solid #cfc;
+    }
+
+    .defaults-info {
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .defaults-info strong {
+      color: #333;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Print Queue Manager</h1>
+      <div class="user-info">
+        <span>Print Configuration</span>
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="config-card">
+      <h2>Configure Print Settings</h2>
+
+      <% if (error) { %>
+        <div class="alert alert-error"><%= error %></div>
+      <% } %>
+
+      <% if (success) { %>
+        <div class="alert alert-success"><%= success %></div>
+      <% } %>
+
+      <form method="POST" action="/configure">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="paperType">Paper Type</label>
+            <select id="paperType" name="paperType" required>
+              <% options.paperTypes.forEach(type => { %>
+                <option value="<%= type %>" <%= defaults.paperType === type ? 'selected' : '' %>>
+                  <%= type %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="printQuality">Print Quality (DPI)</label>
+            <select id="printQuality" name="printQuality" required>
+              <% options.printQualities.forEach(quality => { %>
+                <option value="<%= quality %>" <%= defaults.printQuality === quality ? 'selected' : '' %>>
+                  <%= quality %> DPI
+                </option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="colorMode">Color Mode</label>
+            <select id="colorMode" name="colorMode" required>
+              <% options.colorModes.forEach(mode => { %>
+                <option value="<%= mode %>" <%= defaults.colorMode === mode ? 'selected' : '' %>>
+                  <%= mode %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="paperSize">Paper Size</label>
+            <select id="paperSize" name="paperSize" required>
+              <% options.paperSizes.forEach(size => { %>
+                <option value="<%= size %>" <%= defaults.paperSize === size ? 'selected' : '' %>>
+                  <%= size %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn-primary">Save Settings</button>
+          <a href="/dashboard" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Back to Dashboard</a>
+        </div>
+      </form>
+
+      <div class="defaults-info">
+        <strong>Default Settings:</strong><br>
+        Paper Type: <%= defaults.paperType %><br>
+        Print Quality: <%= defaults.printQuality %> DPI<br>
+        Color Mode: <%= defaults.colorMode %><br>
+        Paper Size: <%= defaults.paperSize %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

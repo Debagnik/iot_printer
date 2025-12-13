@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Confirmation - Print Queue Manager</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .confirmation-card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .success-icon {
+      font-size: 48px;
+      color: #4caf50;
+      margin-bottom: 20px;
+    }
+
+    .confirmation-card h2 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .confirmation-card p {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 16px;
+    }
+
+    .job-id-box {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 4px;
+      margin-bottom: 30px;
+      border-left: 4px solid #667eea;
+    }
+
+    .job-id-label {
+      font-size: 12px;
+      color: #999;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .job-id {
+      font-size: 32px;
+      font-weight: 700;
+      color: #667eea;
+      font-family: 'Courier New', monospace;
+    }
+
+    .details-section {
+      text-align: left;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 4px;
+      margin-bottom: 30px;
+    }
+
+    .details-section h3 {
+      color: #333;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .detail-row:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #333;
+    }
+
+    .detail-value {
+      color: #666;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .alert-info {
+      background: #e3f2fd;
+      color: #1976d2;
+      border: 1px solid #bbdefb;
+    }
+
+    .alert-warning {
+      background: #fff3e0;
+      color: #f57c00;
+      border: 1px solid #ffe0b2;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    a {
+      flex: 1;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    @media (max-width: 600px) {
+      .button-group {
+        flex-direction: column;
+      }
+
+      .job-id {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Print Queue Manager</h1>
+      <div class="user-info">
+        <span>Job Confirmation</span>
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="confirmation-card">
+      <div class="success-icon">✓</div>
+      <h2>Print Job Submitted</h2>
+      <p>Your document has been successfully submitted to the print queue.</p>
+
+      <div class="job-id-box">
+        <div class="job-id-label">Job ID</div>
+        <div class="job-id"><%= jobId %></div>
+      </div>
+
+      <% if (!submissionResult.success) { %>
+        <div class="alert alert-warning">
+          <strong>Note:</strong> <%= submissionResult.message %>
+        </div>
+      <% } else { %>
+        <div class="alert alert-info">
+          Your print job is now in the queue and will be processed by the printer.
+        </div>
+      <% } %>
+
+      <div class="details-section">
+        <h3>Job Details</h3>
+        <div class="detail-row">
+          <span class="detail-label">Document:</span>
+          <span class="detail-value"><%= documentName %></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Paper Type:</span>
+          <span class="detail-value"><%= settings.paperType %></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Print Quality:</span>
+          <span class="detail-value"><%= settings.printQuality %> DPI</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Color Mode:</span>
+          <span class="detail-value"><%= settings.colorMode %></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Paper Size:</span>
+          <span class="detail-value"><%= settings.paperSize %></span>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <a href="/dashboard" class="btn-primary">Back to Dashboard</a>
+        <a href="/upload" class="btn-secondary">Submit Another Job</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

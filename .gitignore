@@ -1,0 +1,9 @@
+.env
+/data
+/.kiro
+/node_modules
+*.pdf
+test_document.txt
+package-lock.json
+uploads
+*.png
