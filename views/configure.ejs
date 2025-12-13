@@ -208,8 +208,12 @@
 
       <% if (success) { %>
         <div class="alert alert-success"><%= success %></div>
+        <div style="margin-top: 20px; text-align: center;">
+          <a href="/submit-job" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: 600;">Proceed to Submit Job</a>
+        </div>
       <% } %>
 
+      <% if (!success) { %>
       <form method="POST" action="/configure">
         <div class="form-row">
           <div class="form-group">
@@ -264,6 +268,7 @@
           <a href="/dashboard" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Back to Dashboard</a>
         </div>
       </form>
+      <% } %>
 
       <div class="defaults-info">
         <strong>Default Settings:</strong><br>
