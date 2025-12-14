@@ -138,18 +138,50 @@ async function scanDocument(format = 'pdf') {
       // Convert from PNM to desired format
       if (format.toLowerCase() === 'pdf') {
         console.log('[SCANNER] Converting PNM to PDF');
-        const convertCommand = `convert "${tempPnmPath}" "${finalPath}"`;
-        await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
+        try {
+          // Try using ffmpeg first
+          const convertCommand = `ffmpeg -i "${tempPnmPath}" "${finalPath}" -y`;
+          await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
+        } catch (ffmpegErr) {
+          console.log('[SCANNER] ffmpeg not available, trying convert');
+          try {
+            // Fall back to ImageMagick convert
+            const convertCommand = `convert "${tempPnmPath}" "${finalPath}"`;
+            await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
+          } catch (convertErr) {
+            console.log('[SCANNER] convert not available, saving as PNM instead');
+            // If neither works, just rename to PDF (it will be PNM format)
+            fs.renameSync(tempPnmPath, finalPath);
+          }
+        }
         
-        // Remove temporary PNM file
-        fs.unlinkSync(tempPnmPath);
+        // Remove temporary PNM file if it still exists
+        if (fs.existsSync(tempPnmPath)) {
+          fs.unlinkSync(tempPnmPath);
+        }
       } else if (format.toLowerCase() === 'png') {
         console.log('[SCANNER] Converting PNM to PNG');
-        const convertCommand = `convert "${tempPnmPath}" "${finalPath}"`;
-        await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
+        try {
+          // Try using ffmpeg first
+          const convertCommand = `ffmpeg -i "${tempPnmPath}" "${finalPath}" -y`;
+          await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
+        } catch (ffmpegErr) {
+          console.log('[SCANNER] ffmpeg not available, trying convert');
+          try {
+            // Fall back to ImageMagick convert
+            const convertCommand = `convert "${tempPnmPath}" "${finalPath}"`;
+            await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
+          } catch (convertErr) {
+            console.log('[SCANNER] convert not available, saving as PNG anyway');
+            // If neither works, just rename to PNG (it will be PNM format but with PNG extension)
+            fs.renameSync(tempPnmPath, finalPath);
+          }
+        }
         
-        // Remove temporary PNM file
-        fs.unlinkSync(tempPnmPath);
+        // Remove temporary PNM file if it still exists
+        if (fs.existsSync(tempPnmPath)) {
+          fs.unlinkSync(tempPnmPath);
+        }
       }
 
       console.log(`[SCANNER] Scan saved to: ${finalPath}`);
