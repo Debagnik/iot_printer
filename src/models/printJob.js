@@ -73,14 +73,24 @@ async function submitJobToQueue(jobId, documentPath, settings) {
       throw new Error(`Job ${jobId} not found`);
     }
 
+    // Normalize settings to ensure correct types
+    const normalizedSettings = {
+      paperType: String(settings.paperType),
+      printQuality: parseInt(settings.printQuality, 10),
+      colorMode: String(settings.colorMode),
+      paperSize: String(settings.paperSize)
+    };
+
+    console.log(`[JOB] Normalized settings for job ${jobId}:`, normalizedSettings);
+
     // Validate print settings
-    const validation = printerIntegration.validatePrintSettings(settings);
+    const validation = printerIntegration.validatePrintSettings(normalizedSettings);
     if (!validation.valid) {
       throw new Error(`Invalid print settings: ${validation.errors.join(', ')}`);
     }
 
     // Submit to printer using printer integration module
-    const result = await printerIntegration.submitJobToPrinter(documentPath, settings);
+    const result = await printerIntegration.submitJobToPrinter(documentPath, normalizedSettings);
 
     if (result.success) {
       // Update job status to in-progress
