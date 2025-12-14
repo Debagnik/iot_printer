@@ -116,15 +116,18 @@ async function scanDocument(format = 'pdf') {
     const tempPngPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}_temp.png`);
     const finalPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}.${format.toLowerCase()}`);
 
-    console.log(`[SCANNER] Scanning to temporary file: ${tempPngPath}`);
+    // Scan to temporary PNM file first (default format, more reliable)
+    const tempPnmPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}_temp.pnm`);
+    
+    console.log(`[SCANNER] Scanning to temporary PNM file: ${tempPnmPath}`);
     console.log(`[SCANNER] Using device: ${deviceName}`);
 
-    // Use scanimage to scan directly to PNG format
+    // Use scanimage to scan to PNM format (default, most reliable)
     let scanCommand;
     if (deviceName === 'default') {
-      scanCommand = `scanimage --format=png > "${tempPngPath}"`;
+      scanCommand = `scanimage > "${tempPnmPath}"`;
     } else {
-      scanCommand = `scanimage --device-name="${deviceName}" --format=png > "${tempPngPath}"`;
+      scanCommand = `scanimage --device-name="${deviceName}" > "${tempPnmPath}"`;
     }
     
     try {
@@ -132,17 +135,21 @@ async function scanDocument(format = 'pdf') {
       await exec(scanCommand, { timeout: SCANNER_CONFIG.defaultTimeout, shell: '/bin/bash' });
       console.log('[SCANNER] Scan completed successfully');
 
-      // Convert to desired format if needed
+      // Convert from PNM to desired format
       if (format.toLowerCase() === 'pdf') {
-        console.log('[SCANNER] Converting PNG to PDF');
-        const convertCommand = `convert "${tempPngPath}" "${finalPath}"`;
+        console.log('[SCANNER] Converting PNM to PDF');
+        const convertCommand = `convert "${tempPnmPath}" "${finalPath}"`;
         await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
         
-        // Remove temporary PNG file
-        fs.unlinkSync(tempPngPath);
+        // Remove temporary PNM file
+        fs.unlinkSync(tempPnmPath);
       } else if (format.toLowerCase() === 'png') {
-        console.log('[SCANNER] Renaming PNG file');
-        fs.renameSync(tempPngPath, finalPath);
+        console.log('[SCANNER] Converting PNM to PNG');
+        const convertCommand = `convert "${tempPnmPath}" "${finalPath}"`;
+        await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
+        
+        // Remove temporary PNM file
+        fs.unlinkSync(tempPnmPath);
       }
 
       console.log(`[SCANNER] Scan saved to: ${finalPath}`);
@@ -157,12 +164,12 @@ async function scanDocument(format = 'pdf') {
       console.error('[SCANNER] Scan error:', scanError.message);
       console.error('[SCANNER] Full error:', scanError);
       
-      // Clean up temporary file if it exists
-      if (fs.existsSync(tempPngPath)) {
+      // Clean up temporary files if they exist
+      if (fs.existsSync(tempPnmPath)) {
         try {
-          fs.unlinkSync(tempPngPath);
+          fs.unlinkSync(tempPnmPath);
         } catch (err) {
-          console.error('[SCANNER] Error cleaning up temporary file:', err);
+          console.error('[SCANNER] Error cleaning up temporary PNM file:', err);
         }
       }
 
