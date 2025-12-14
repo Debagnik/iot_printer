@@ -25,7 +25,7 @@ describe('Printer Integration Module', () => {
       const options = printerIntegration.formatPrinterOptions(settings);
 
       expect(options).toContain('-o media=A4');
-      expect(options).toContain('-o ColorModel=Gray');
+      expect(options).toContain('-o ColorModel=KGray');
       expect(options).toContain('-o Resolution=600x600dpi');
       expect(options).toContain('-o MediaType=Plain');
     });

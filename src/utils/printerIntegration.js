@@ -43,9 +43,10 @@ function formatPrinterOptions(settings) {
   };
 
   // Color mode mapping to CUPS options
+  // For HP Ink Tank 310: RGB (color), KGray (black & white), CMYGray (color grayscale)
   const colorModeMap = {
     'Color': '-o ColorModel=RGB',
-    'Grayscale': '-o ColorModel=Gray'
+    'Grayscale': '-o ColorModel=KGray'
   };
 
   // DPI mapping to CUPS options
