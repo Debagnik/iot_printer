@@ -63,34 +63,30 @@ async function scanDocument(format = 'pdf') {
     const randomSuffix = Math.floor(Math.random() * 1E9);
     const fileName = `scanned_${timestamp}_${randomSuffix}`;
     
-    // Scan to temporary PPM file first (SANE native format)
-    const tempPpmPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}.ppm`);
+    // Scan to temporary PNG file first (supported by scanner)
+    const tempPngPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}_temp.png`);
     const finalPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}.${format.toLowerCase()}`);
 
-    console.log(`[SCANNER] Scanning to temporary file: ${tempPpmPath}`);
+    console.log(`[SCANNER] Scanning to temporary file: ${tempPngPath}`);
 
-    // Use scanimage to scan
-    const scanCommand = `scanimage --device-name="${SCANNER_CONFIG.name}" --format=ppm > "${tempPpmPath}"`;
+    // Use scanimage to scan directly to PNG format
+    const scanCommand = `scanimage --device-name="${SCANNER_CONFIG.name}" --format=png > "${tempPngPath}"`;
     
     try {
       await exec(scanCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
       console.log('[SCANNER] Scan completed successfully');
 
-      // Convert PPM to desired format if needed
+      // Convert to desired format if needed
       if (format.toLowerCase() === 'pdf') {
-        console.log('[SCANNER] Converting PPM to PDF');
-        const convertCommand = `convert "${tempPpmPath}" "${finalPath}"`;
+        console.log('[SCANNER] Converting PNG to PDF');
+        const convertCommand = `convert "${tempPngPath}" "${finalPath}"`;
         await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
         
-        // Remove temporary PPM file
-        fs.unlinkSync(tempPpmPath);
+        // Remove temporary PNG file
+        fs.unlinkSync(tempPngPath);
       } else if (format.toLowerCase() === 'png') {
-        console.log('[SCANNER] Converting PPM to PNG');
-        const convertCommand = `convert "${tempPpmPath}" "${finalPath}"`;
-        await exec(convertCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
-        
-        // Remove temporary PPM file
-        fs.unlinkSync(tempPpmPath);
+        console.log('[SCANNER] Renaming PNG file');
+        fs.renameSync(tempPngPath, finalPath);
       }
 
       console.log(`[SCANNER] Scan saved to: ${finalPath}`);
@@ -105,9 +101,9 @@ async function scanDocument(format = 'pdf') {
       console.error('[SCANNER] Scan error:', scanError.message);
       
       // Clean up temporary file if it exists
-      if (fs.existsSync(tempPpmPath)) {
+      if (fs.existsSync(tempPngPath)) {
         try {
-          fs.unlinkSync(tempPpmPath);
+          fs.unlinkSync(tempPngPath);
         } catch (err) {
           console.error('[SCANNER] Error cleaning up temporary file:', err);
         }

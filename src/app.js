@@ -2,6 +2,7 @@ const express = require('express');
 const session = require('express-session');
 const path = require('path');
 const db = require('./models/database');
+const cleanupService = require('./utils/cleanupService');
 const authController = require('./controllers/authController');
 const uploadController = require('./controllers/uploadController');
 const configController = require('./controllers/configController');
@@ -64,6 +65,7 @@ app.get('/submit-job', requireAuth, jobController.getSubmitJob);
 app.post('/submit-job', requireAuth, jobController.postSubmitJob);
 app.get('/job/:jobId', requireAuth, jobController.getJobDetails);
 app.get('/api/job/:jobId/status', requireAuth, jobController.updateJobStatus);
+app.post('/api/cleanup', requireAuth, jobController.manualCleanup);
 
 // Scanner routes
 app.get('/scanner', requireAuth, scannerController.getScannerPage);
@@ -85,6 +87,9 @@ db.initializeDatabase()
     app.listen(PORT, () => {
       console.log(`Print Queue Manager listening on port ${PORT}`);
     });
+
+    // Schedule daily cleanup
+    cleanupService.scheduleDailyCleanup();
   })
   .catch((err) => {
     console.error('Failed to initialize database:', err);

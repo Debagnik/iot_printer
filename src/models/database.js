@@ -312,5 +312,8 @@ module.exports = {
   getPrintJob,
   updatePrintJobStatus,
   completePrintJob,
-  closeDatabase
+  closeDatabase,
+  get db() {
+    return db;
+  }
 };

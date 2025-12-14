@@ -101,6 +101,7 @@
     <div class="actions">
       <a href="/upload" class="action-btn">Upload Document</a>
       <a href="/scanner" class="action-btn" style="margin-left: 10px;">Scan Document</a>
+      <button type="button" class="action-btn" style="margin-left: 10px;" onclick="runCleanup()">Clean Up Storage</button>
     </div>
 
     <div class="job-history">
@@ -287,6 +288,32 @@
             .catch(err => console.error('Error updating job status:', err));
         }
       });
+    }
+
+    // Run manual cleanup
+    function runCleanup() {
+      if (confirm('This will delete all files older than 24 hours. Continue?')) {
+        const btn = event.target;
+        btn.disabled = true;
+        btn.textContent = 'Cleaning...';
+
+        fetch('/api/cleanup', {
+          method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(`Cleanup completed!\n\nDeleted:\n- ${data.details.uploadedDocs} uploaded documents\n- ${data.details.scannedDocs} scanned documents\n- ${data.details.printJobs} print jobs`);
+          btn.disabled = false;
+          btn.textContent = 'Clean Up Storage';
+          location.reload();
+        })
+        .catch(err => {
+          console.error('Error:', err);
+          alert('Cleanup failed. Check console for details.');
+          btn.disabled = false;
+          btn.textContent = 'Clean Up Storage';
+        });
+      }
     }
 
     // Check job statuses on page load and then every 5 seconds

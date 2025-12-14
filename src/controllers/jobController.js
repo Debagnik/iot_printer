@@ -202,10 +202,34 @@ async function updateJobStatus(req, res) {
   }
 }
 
+/**
+ * Manually trigger cleanup
+ */
+async function manualCleanup(req, res) {
+  try {
+    const cleanupService = require('../utils/cleanupService');
+    const result = await cleanupService.runAllCleanup();
+
+    res.json({
+      success: true,
+      message: result.message,
+      details: {
+        uploadedDocs: result.uploadedDocs,
+        scannedDocs: result.scannedDocs,
+        printJobs: result.printJobs
+      }
+    });
+  } catch (err) {
+    console.error('Manual cleanup error:', err);
+    res.status(500).json({ error: 'Failed to run cleanup' });
+  }
+}
+
 module.exports = {
   getSubmitJob,
   postSubmitJob,
   getJobDetails,
   getDashboard,
-  updateJobStatus
+  updateJobStatus,
+  manualCleanup
 };
