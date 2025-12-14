@@ -158,9 +158,54 @@ async function getDashboard(req, res) {
   }
 }
 
+/**
+ * Update job status by checking printer queue
+ * Called periodically to sync job status with printer
+ */
+async function updateJobStatus(req, res) {
+  try {
+    const { jobId } = req.params;
+
+    if (!jobId || isNaN(jobId)) {
+      return res.status(400).json({ error: 'Invalid job ID' });
+    }
+
+    // Get job from database
+    const job = await PrintJob.getPrintJob(parseInt(jobId, 10));
+
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    // Verify user owns this job
+    if (job.userId !== req.session.userId) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    // Check if job is still in printer queue
+    const printerIntegration = require('../utils/printerIntegration');
+    const statusCheck = await printerIntegration.isJobInQueue(job.id);
+
+    // Update job status in database if it's completed
+    if (!statusCheck.inQueue && job.status === 'in-progress') {
+      await PrintJob.updateJobStatus(job.id, 'completed');
+    }
+
+    res.json({
+      jobId: job.id,
+      status: statusCheck.status,
+      updated: !statusCheck.inQueue
+    });
+  } catch (err) {
+    console.error('Update job status error:', err);
+    res.status(500).json({ error: 'Failed to update job status' });
+  }
+}
+
 module.exports = {
   getSubmitJob,
   postSubmitJob,
   getJobDetails,
-  getDashboard
+  getDashboard,
+  updateJobStatus
 };

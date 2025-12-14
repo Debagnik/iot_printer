@@ -228,11 +228,11 @@
           </div>
 
           <div class="form-group">
-            <label for="printQuality">Print Quality (DPI)</label>
+            <label for="printQuality">Print Quality</label>
             <select id="printQuality" name="printQuality" required>
               <% options.printQualities.forEach(quality => { %>
                 <option value="<%= quality %>" <%= defaults.printQuality === quality ? 'selected' : '' %>>
-                  <%= quality %> DPI
+                  <%= quality %>
                 </option>
               <% }); %>
             </select>
@@ -273,7 +273,7 @@
       <div class="defaults-info">
         <strong>Default Settings:</strong><br>
         Paper Type: <%= defaults.paperType %><br>
-        Print Quality: <%= defaults.printQuality %> DPI<br>
+        Print Quality: <%= defaults.printQuality %><br>
         Color Mode: <%= defaults.colorMode %><br>
         Paper Size: <%= defaults.paperSize %>
       </div>

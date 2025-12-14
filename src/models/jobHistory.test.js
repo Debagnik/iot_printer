@@ -170,7 +170,7 @@ describe('Job History and Session Isolation', () => {
                   `document_${i}.pdf`,
                   `/tmp/document_${i}.pdf`,
                   'Plain Paper',
-                  600,
+                  'Normal',
                   'Grayscale',
                   'A4',
                   'pending'

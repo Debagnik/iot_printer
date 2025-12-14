@@ -32,7 +32,7 @@ describe('Print Settings', () => {
 
           // Phase 3: Verify types are correct
           expect(typeof normalizedSettings.paperType).toBe('string');
-          expect(typeof normalizedSettings.printQuality).toBe('number');
+          expect(typeof normalizedSettings.printQuality).toBe('string');
           expect(typeof normalizedSettings.colorMode).toBe('string');
           expect(typeof normalizedSettings.paperSize).toBe('string');
 

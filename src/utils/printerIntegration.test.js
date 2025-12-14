@@ -17,7 +17,7 @@ describe('Printer Integration Module', () => {
     test('should format valid print settings correctly', () => {
       const settings = {
         paperType: 'Plain Paper',
-        printQuality: 600,
+        printQuality: 'Normal',
         colorMode: 'Grayscale',
         paperSize: 'A4'
       };
@@ -58,16 +58,16 @@ describe('Printer Integration Module', () => {
       });
     });
 
-    test('should handle high quality settings', () => {
+    test('should handle photo quality settings', () => {
       const settings = {
         paperType: 'Plain Paper',
-        printQuality: 1200,
+        printQuality: 'Photo',
         colorMode: 'Grayscale',
         paperSize: 'A4'
       };
 
       const options = printerIntegration.formatPrinterOptions(settings);
-      expect(options).toContain('-o OutputMode=Best');
+      expect(options).toContain('-o OutputMode=Photo');
     });
 
     test('should handle glossy paper type', () => {
@@ -87,7 +87,7 @@ describe('Printer Integration Module', () => {
         fc.asyncProperty(
           fc.record({
             paperType: fc.constantFrom('Plain Paper', 'Glossy'),
-            printQuality: fc.constantFrom(600, 1200),
+            printQuality: fc.constantFrom('Normal', 'Best', 'Photo'),
             colorMode: fc.constantFrom('Color', 'Grayscale'),
             paperSize: fc.constantFrom('A4', 'Letter', 'Legal')
           }),
@@ -139,7 +139,7 @@ describe('Printer Integration Module', () => {
     test('should reject invalid print quality', () => {
       const settings = {
         paperType: 'Plain Paper',
-        printQuality: 300,
+        printQuality: 'Ultra',
         colorMode: 'Grayscale',
         paperSize: 'A4'
       };
@@ -186,7 +186,7 @@ describe('Printer Integration Module', () => {
         fc.asyncProperty(
           fc.record({
             paperType: fc.constantFrom('Plain Paper', 'Glossy'),
-            printQuality: fc.constantFrom(600, 1200),
+            printQuality: fc.constantFrom('Normal', 'Best', 'Photo'),
             colorMode: fc.constantFrom('Color', 'Grayscale'),
             paperSize: fc.constantFrom('A4', 'Letter', 'Legal')
           }),

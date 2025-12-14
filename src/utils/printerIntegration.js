@@ -50,10 +50,11 @@ function formatPrinterOptions(settings) {
   };
 
   // Print quality mapping to CUPS options
-  // HP Ink Tank 310 uses OutputMode instead of Resolution
+  // HP Ink Tank 310 uses OutputMode with three quality levels
   const qualityMap = {
-    600: '-o OutputMode=Normal',
-    1200: '-o OutputMode=Best'
+    'Normal': '-o OutputMode=Normal',
+    'Best': '-o OutputMode=Best',
+    'Photo': '-o OutputMode=Photo'
   };
 
   // Paper type mapping to CUPS options
@@ -339,6 +340,37 @@ async function getPrintQueueStatus() {
 }
 
 /**
+ * Check if a print job is still in the queue
+ * @param {string} jobId - Job ID to check
+ * @returns {Promise<{inQueue: boolean, status: string}>}
+ */
+async function isJobInQueue(jobId) {
+  try {
+    const queueStatus = await getPrintQueueStatus();
+    const jobInQueue = queueStatus.jobs.some(job => job.jobId.includes(jobId));
+    
+    if (jobInQueue) {
+      return {
+        inQueue: true,
+        status: 'in-progress'
+      };
+    } else {
+      // Job is not in queue, assume it's completed
+      return {
+        inQueue: false,
+        status: 'completed'
+      };
+    }
+  } catch (err) {
+    console.error(`[PRINTER] Error checking job status: ${err.message}`);
+    return {
+      inQueue: false,
+      status: 'completed'
+    };
+  }
+}
+
+/**
  * Cancel a print job
  * @param {string} jobId - Job ID to cancel
  * @returns {Promise<{success: boolean, message: string}>}
@@ -444,6 +476,7 @@ module.exports = {
   getPrinterStatus,
   submitJobToPrinter,
   getPrintQueueStatus,
+  isJobInQueue,
   cancelPrintJob,
   validatePrintSettings,
   getPrinterCapabilities,

@@ -1,0 +1,3839 @@
+
+> print-queue-manager@1.0.0 test
+> jest
+
+PASS src/utils/fileValidator.test.js
+FAIL src/models/printSettings.test.js
+  ΓùÅ Print Settings ΓÇ║ Unit test: Valid settings pass validation
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      179 |     const validation = PrintSettings.validateSettings(validSettings);
+      180 |
+    > 181 |     expect(validation.isValid).toBe(true);
+          |                                ^
+      182 |     expect(validation.errors.length).toBe(0);
+      183 |   });
+      184 |
+
+      at Object.toBe (src/models/printSettings.test.js:181:32)
+
+  ΓùÅ Print Settings ΓÇ║ Unit test: Get defaults returns correct values
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 600
+    Received: "Normal"
+
+      190 |
+      191 |     expect(defaults.paperType).toBe('Plain Paper');
+    > 192 |     expect(defaults.printQuality).toBe(600);
+          |                                   ^
+      193 |     expect(defaults.colorMode).toBe('Grayscale');
+      194 |     expect(defaults.paperSize).toBe('A4');
+      195 |   });
+
+      at Object.toBe (src/models/printSettings.test.js:192:35)
+
+FAIL src/utils/printerIntegration.test.js
+  ΓùÅ Console
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        colorMode: 'Color',
+        paperType: 'Plain Paper',
+        printQuality: 600,
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: number, value: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Quality not found: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:87:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperSize: 'A4',
+        paperType: 'Plain Paper',
+        printQuality: 600,
+        colorMode: 'Grayscale'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] printQuality type: number, value: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] Quality not found: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:87:13)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperSize: 'Letter',
+        paperType: 'Plain Paper',
+        printQuality: 600,
+        colorMode: 'Grayscale'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] printQuality type: number, value: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] Quality not found: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:87:13)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperSize: 'Legal',
+        paperType: 'Plain Paper',
+        printQuality: 600,
+        colorMode: 'Grayscale'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] printQuality type: number, value: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] Quality not found: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:87:13)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 600,
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: number, value: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Quality not found: 600
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:87:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=RGB -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Photo',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Photo -> -o OutputMode=Photo
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Photo -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Normal',
+        colorMode: 'Grayscale',
+        paperSize: 'Letter'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Normal -> -o OutputMode=Normal
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Letter -o ColorModel=KGray -o OutputMode=Normal -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=RGB -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Glossy',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'Legal'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=Legal -o ColorModel=KGray -o OutputMode=Best -o MediaType=Glossy
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Color',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Color -> -o ColorModel=RGB
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=RGB -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] formatPrinterOptions input: {
+        paperType: 'Plain Paper',
+        printQuality: 'Best',
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:66:11)
+
+    console.log
+      [PRINTER] printQuality type: string, value: Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:67:11)
+
+    console.log
+      [PRINTER] Adding color mode: Grayscale -> -o ColorModel=KGray
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:76:13)
+
+    console.log
+      [PRINTER] Adding quality: Best -> -o OutputMode=Best
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:84:13)
+
+    console.log
+      [PRINTER] Formatted options: -o media=A4 -o ColorModel=KGray -o OutputMode=Best -o MediaType=Plain
+
+      at Object.log [as formatPrinterOptions] (src/utils/printerIntegration.js:96:11)
+
+    console.log
+      [PRINTER] submitJobToPrinter called with path: /nonexistent/file.pdf
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:170:13)
+
+    console.log
+      [PRINTER] Platform detected: win32
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:171:13)
+
+    console.error
+      [PRINTER] Document file not found: /nonexistent/file.pdf
+
+      173 |     // Validate document exists
+      174 |     if (!fs.existsSync(documentPath)) {
+    > 175 |       console.error(`[PRINTER] Document file not found: ${documentPath}`);
+          |               ^
+      176 |       throw new Error(`Document file not found: ${documentPath}`);
+      177 |     }
+      178 |
+
+      at Object.error [as submitJobToPrinter] (src/utils/printerIntegration.js:175:15)
+      at Object.submitJobToPrinter (src/utils/printerIntegration.test.js:295:47)
+
+    console.error
+      [PRINTER] Error in submitJobToPrinter: Document file not found: /nonexistent/file.pdf
+
+      199 |     }
+      200 |   } catch (err) {
+    > 201 |     console.error(`[PRINTER] Error in submitJobToPrinter: ${err.message}`);
+          |             ^
+      202 |     return {
+      203 |       success: false,
+      204 |       jobId: null,
+
+      at Object.error [as submitJobToPrinter] (src/utils/printerIntegration.js:201:13)
+      at Object.submitJobToPrinter (src/utils/printerIntegration.test.js:295:47)
+
+    console.log
+      [PRINTER] submitJobToPrinter called with path: C:\Users\debag\Documents\projest_RPI\data\test_document.pdf
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:170:13)
+
+    console.log
+      [PRINTER] Platform detected: win32
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:171:13)
+
+    console.log
+      [PRINTER] Document file exists
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:179:13)
+
+    console.error
+      [PRINTER] Invalid print settings
+
+      181 |     // Validate settings
+      182 |     if (!settings || typeof settings !== 'object') {
+    > 183 |       console.error(`[PRINTER] Invalid print settings`);
+          |               ^
+      184 |       throw new Error('Invalid print settings');
+      185 |     }
+      186 |
+
+      at Object.error [as submitJobToPrinter] (src/utils/printerIntegration.js:183:15)
+      at Object.submitJobToPrinter (src/utils/printerIntegration.test.js:309:49)
+
+    console.error
+      [PRINTER] Error in submitJobToPrinter: Invalid print settings
+
+      199 |     }
+      200 |   } catch (err) {
+    > 201 |     console.error(`[PRINTER] Error in submitJobToPrinter: ${err.message}`);
+          |             ^
+      202 |     return {
+      203 |       success: false,
+      204 |       jobId: null,
+
+      at Object.error [as submitJobToPrinter] (src/utils/printerIntegration.js:201:13)
+      at Object.submitJobToPrinter (src/utils/printerIntegration.test.js:309:49)
+
+    console.log
+      [PRINTER] submitJobToPrinter called with path: C:\Users\debag\Documents\projest_RPI\data\test_document.pdf
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:170:13)
+
+    console.log
+      [PRINTER] Platform detected: win32
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:171:13)
+
+    console.log
+      [PRINTER] Document file exists
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:179:13)
+
+    console.log
+      [PRINTER] Settings validated
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:187:13)
+
+    console.log
+      [PRINTER] Using Windows submission
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:191:15)
+
+  ΓùÅ Printer Integration Module ΓÇ║ validatePrintSettings ΓÇ║ Property: Validate all valid setting combinations
+
+    Property failed after 1 tests
+    { seed: 2036357638, path: "0:0:0:0", endOnFailure: true }
+    Counterexample: [{"paperType":"Plain Paper","printQuality":"Normal","colorMode":"Color","paperSize":"A4"}]
+    Shrunk 3 time(s)
+    Got error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      195 |
+      196 |             // All valid combinations should pass validation
+    > 197 |             expect(result.valid).toBe(true);
+          |                                  ^
+      198 |             expect(result.errors).toHaveLength(0);
+      199 |           }
+      200 |         ),
+
+      at toBe (src/utils/printerIntegration.test.js:197:34)
+      at AsyncProperty.predicate (node_modules/fast-check/lib/check/property/AsyncProperty.js:17:96)
+      at AsyncProperty.run (node_modules/fast-check/lib/check/property/AsyncProperty.generic.js:49:39)
+      at asyncRunIt (node_modules/fast-check/lib/check/runner/Runner.js:37:36)
+      at Object.<anonymous> (src/utils/printerIntegration.test.js:185:7)
+      Hint: Enable verbose mode in order to have the list of all failing values encountered during the run
+      at buildError (node_modules/fast-check/lib/check/runner/utils/RunDetailsFormatter.js:132:15)
+      at asyncThrowIfFailed (node_modules/fast-check/lib/check/runner/utils/RunDetailsFormatter.js:149:11)
+
+FAIL src/integration.test.js (6.111 s)
+  ΓùÅ Console
+
+    console.error
+      Error: Unsupported file format: text/plain
+          at fileFilter (C:\Users\debag\Documents\projest_RPI\src\middleware\multerConfig.js:32:8)
+          at wrappedFileFilter (C:\Users\debag\Documents\projest_RPI\node_modules\multer\index.js:44:7)
+          at Multipart.<anonymous> (C:\Users\debag\Documents\projest_RPI\node_modules\multer\lib\make-middleware.js:109:7)
+          at Multipart.emit (node:events:518:28)
+          at HeaderParser.cb (C:\Users\debag\Documents\projest_RPI\node_modules\busboy\lib\types\multipart.js:358:14)
+          at HeaderParser.push (C:\Users\debag\Documents\projest_RPI\node_modules\busboy\lib\types\multipart.js:162:20)
+          at SBMH.ssCb [as _cb] (C:\Users\debag\Documents\projest_RPI\node_modules\busboy\lib\types\multipart.js:394:37)
+          at feed (C:\Users\debag\Documents\projest_RPI\node_modules\streamsearch\lib\sbmh.js:248:10)
+          at SBMH.push (C:\Users\debag\Documents\projest_RPI\node_modules\streamsearch\lib\sbmh.js:104:16)
+          at Multipart._write (C:\Users\debag\Documents\projest_RPI\node_modules\busboy\lib\types\multipart.js:567:19)
+          at writeOrBuffer (node:internal/streams/writable:572:12)
+          at _write (node:internal/streams/writable:501:10)
+          at Multipart.Writable.write (node:internal/streams/writable:510:10)
+          at IncomingMessage.ondata (node:internal/streams/readable:1009:22)
+          at IncomingMessage.emit (node:events:518:28)
+          at IncomingMessage.Readable.read (node:internal/streams/readable:782:10)
+          at flow (node:internal/streams/readable:1283:53)
+          at resume_ (node:internal/streams/readable:1262:3)
+          at processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+      70 | // Error handling middleware
+      71 | app.use((err, req, res, next) => {
+    > 72 |   console.error(err.stack);
+         |           ^
+      73 |   res.status(500).render('error', { error: err.message });
+      74 | });
+      75 |
+
+      at error (src/integration.test.js:72:11)
+      at Layer.handle_error (node_modules/express/lib/router/layer.js:71:5)
+      at trim_prefix (node_modules/express/lib/router/index.js:326:13)
+      at node_modules/express/lib/router/index.js:286:9
+      at Function.process_params (node_modules/express/lib/router/index.js:346:12)
+      at next (node_modules/express/lib/router/index.js:280:10)
+      at next (node_modules/express/lib/router/route.js:141:14)
+      at Layer.handle_error (node_modules/express/lib/router/layer.js:67:12)
+      at next (node_modules/express/lib/router/route.js:147:13)
+      at done (node_modules/multer/lib/make-middleware.js:47:7)
+      at node_modules/multer/lib/make-middleware.js:67:11
+      at removeUploadedFiles (node_modules/multer/lib/remove-uploaded-files.js:5:28)
+      at node_modules/multer/lib/make-middleware.js:63:9
+      at Counter.onceZero (node_modules/multer/lib/counter.js:23:29)
+      at abortWithError (node_modules/multer/lib/make-middleware.js:58:21)
+      at node_modules/multer/lib/make-middleware.js:112:18
+      at cb (src/middleware/multerConfig.js:32:5)
+      at wrappedFileFilter (node_modules/multer/index.js:44:7)
+      at Multipart.<anonymous> (node_modules/multer/lib/make-middleware.js:109:7)
+      at HeaderParser.cb (node_modules/busboy/lib/types/multipart.js:358:14)
+      at HeaderParser.push (node_modules/busboy/lib/types/multipart.js:162:20)
+      at SBMH.ssCb [as _cb] (node_modules/busboy/lib/types/multipart.js:394:37)
+      at feed (node_modules/streamsearch/lib/sbmh.js:248:10)
+      at SBMH.push (node_modules/streamsearch/lib/sbmh.js:104:16)
+      at Multipart._write (node_modules/busboy/lib/types/multipart.js:567:19)
+
+    console.log
+      [JOB] Normalized settings for job 72: {
+        paperType: 'Plain Paper',
+        printQuality: NaN,
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as submitJobToQueue] (src/models/printJob.js:84:13)
+
+    console.log
+      [PRINTER] submitJobToPrinter called with path: C:\Users\debag\Documents\projest_RPI\uploads\test_document-1765672232162-343153573.pdf
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:170:13)
+
+    console.log
+      [PRINTER] Platform detected: win32
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:171:13)
+
+    console.log
+      [PRINTER] Document file exists
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:179:13)
+
+    console.log
+      [PRINTER] Settings validated
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:187:13)
+
+    console.log
+      [PRINTER] Using Windows submission
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:191:15)
+
+    console.log
+      [JOB] Normalized settings for job 73: {
+        paperType: 'Plain Paper',
+        printQuality: NaN,
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as submitJobToQueue] (src/models/printJob.js:84:13)
+
+    console.log
+      [PRINTER] submitJobToPrinter called with path: C:\Users\debag\Documents\projest_RPI\uploads\test_document-1765672232417-509842927.pdf
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:170:13)
+
+    console.log
+      [PRINTER] Platform detected: win32
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:171:13)
+
+    console.log
+      [PRINTER] Document file exists
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:179:13)
+
+    console.log
+      [PRINTER] Settings validated
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:187:13)
+
+    console.log
+      [PRINTER] Using Windows submission
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:191:15)
+
+    console.log
+      [JOB] Normalized settings for job 74: {
+        paperType: 'Plain Paper',
+        printQuality: NaN,
+        colorMode: 'Grayscale',
+        paperSize: 'A4'
+      }
+
+      at Object.log [as submitJobToQueue] (src/models/printJob.js:84:13)
+
+    console.log
+      [PRINTER] submitJobToPrinter called with path: C:\Users\debag\Documents\projest_RPI\uploads\test_document-1765672232702-371650283.pdf
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:170:13)
+
+    console.log
+      [PRINTER] Platform detected: win32
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:171:13)
+
+    console.log
+      [PRINTER] Document file exists
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:179:13)
+
+    console.log
+      [PRINTER] Settings validated
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:187:13)
+
+    console.log
+      [PRINTER] Using Windows submission
+
+      at Object.log [as submitJobToPrinter] (src/utils/printerIntegration.js:191:15)
+
+  ΓùÅ Integration Tests - Print Queue Manager ΓÇ║ Complete Upload and Job Submission Flow ΓÇ║ should complete upload and job submission flow: login -> upload -> configure -> submit
+
+    expect(received).toContain(expected) // indexOf
+
+    Expected substring: "saved successfully"
+    Received string:    "<!DOCTYPE html>┬╖
+    <html lang=\"en\">┬╖
+    <head>┬╖
+      <meta charset=\"UTF-8\">┬╖
+      <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">┬╖
+      <title>Print Configuration - Print Queue Manager</title>┬╖
+      <style>┬╖
+        * {┬╖
+          margin: 0;┬╖
+          padding: 0;┬╖
+          box-sizing: border-box;┬╖
+        }┬╖┬╖┬╖
+        body {┬╖
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;┬╖
+          background: #f5f5f5;┬╖
+          min-height: 100vh;┬╖
+        }┬╖┬╖┬╖
+        header {┬╖
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);┬╖
+          color: white;┬╖
+          padding: 20px;┬╖
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);┬╖
+        }┬╖┬╖┬╖
+        .header-content {┬╖
+          max-width: 1200px;┬╖
+          margin: 0 auto;┬╖
+          display: flex;┬╖
+          justify-content: space-between;┬╖
+          align-items: center;┬╖
+        }┬╖┬╖┬╖
+        h1 {┬╖
+          font-size: 24px;┬╖
+        }┬╖┬╖┬╖
+        .user-info {┬╖
+          display: flex;┬╖
+          align-items: center;┬╖
+          gap: 20px;┬╖
+        }┬╖┬╖┬╖
+        .logout-btn {┬╖
+          background: rgba(255, 255, 255, 0.2);┬╖
+          color: white;┬╖
+          border: 1px solid rgba(255, 255, 255, 0.3);┬╖
+          padding: 8px 16px;┬╖
+          border-radius: 4px;┬╖
+          cursor: pointer;┬╖
+          text-decoration: none;┬╖
+          transition: background 0.3s;┬╖
+        }┬╖┬╖┬╖
+        .logout-btn:hover {┬╖
+          background: rgba(255, 255, 255, 0.3);┬╖
+        }┬╖┬╖┬╖
+        .container {┬╖
+          max-width: 800px;┬╖
+          margin: 30px auto;┬╖
+          padding: 0 20px;┬╖
+        }┬╖┬╖┬╖
+        .config-card {┬╖
+          background: white;┬╖
+          padding: 30px;┬╖
+          border-radius: 8px;┬╖
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);┬╖
+        }┬╖┬╖┬╖
+        .config-card h2 {┬╖
+          color: #333;┬╖
+          margin-bottom: 20px;┬╖
+          font-size: 20px;┬╖
+        }┬╖┬╖┬╖
+        .form-group {┬╖
+          margin-bottom: 20px;┬╖
+        }┬╖┬╖┬╖
+        label {┬╖
+          display: block;┬╖
+          margin-bottom: 8px;┬╖
+          color: #333;┬╖
+          font-weight: 500;┬╖
+        }┬╖┬╖┬╖
+        select {┬╖
+          width: 100%;┬╖
+          padding: 10px;┬╖
+          border: 1px solid #ddd;┬╖
+          border-radius: 4px;┬╖
+          font-size: 14px;┬╖
+          background-color: white;┬╖
+          cursor: pointer;┬╖
+        }┬╖┬╖┬╖
+        select:focus {┬╖
+          outline: none;┬╖
+          border-color: #667eea;┬╖
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);┬╖
+        }┬╖┬╖┬╖
+        .form-row {┬╖
+          display: grid;┬╖
+          grid-template-columns: 1fr 1fr;┬╖
+          gap: 20px;┬╖
+        }┬╖┬╖┬╖
+        .button-group {┬╖
+          display: flex;┬╖
+          gap: 10px;┬╖
+          margin-top: 30px;┬╖
+        }┬╖┬╖┬╖
+        button {┬╖
+          flex: 1;┬╖
+          padding: 12px 20px;┬╖
+          border: none;┬╖
+          border-radius: 4px;┬╖
+          font-size: 14px;┬╖
+          font-weight: 600;┬╖
+          cursor: pointer;┬╖
+          transition: background 0.3s;┬╖
+        }┬╖┬╖┬╖
+        .btn-primary {┬╖
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);┬╖
+          color: white;┬╖
+        }┬╖┬╖┬╖
+        .btn-primary:hover {┬╖
+          opacity: 0.9;┬╖
+        }┬╖┬╖┬╖
+        .btn-secondary {┬╖
+          background: #f0f0f0;┬╖
+          color: #333;┬╖
+        }┬╖┬╖┬╖
+        .btn-secondary:hover {┬╖
+          background: #e0e0e0;┬╖
+        }┬╖┬╖┬╖
+        .alert {┬╖
+          padding: 12px 16px;┬╖
+          border-radius: 4px;┬╖
+          margin-bottom: 20px;┬╖
+          font-size: 14px;┬╖
+        }┬╖┬╖┬╖
+        .alert-error {┬╖
+          background: #fee;┬╖
+          color: #c33;┬╖
+          border: 1px solid #fcc;┬╖
+        }┬╖┬╖┬╖
+        .alert-success {┬╖
+          background: #efe;┬╖
+          color: #3c3;┬╖
+          border: 1px solid #cfc;┬╖
+        }┬╖┬╖┬╖
+        .defaults-info {┬╖
+          background: #f9f9f9;┬╖
+          padding: 15px;┬╖
+          border-radius: 4px;┬╖
+          margin-top: 20px;┬╖
+          font-size: 13px;┬╖
+          color: #666;┬╖
+        }┬╖┬╖┬╖
+        .defaults-info strong {┬╖
+          color: #333;┬╖
+        }┬╖┬╖┬╖
+        @media (max-width: 600px) {┬╖
+          .form-row {┬╖
+            grid-template-columns: 1fr;┬╖
+          }┬╖┬╖┬╖
+          .button-group {┬╖
+            flex-direction: column;┬╖
+          }┬╖
+        }┬╖
+      </style>┬╖
+    </head>┬╖
+    <body>┬╖
+      <header>┬╖
+        <div class=\"header-content\">┬╖
+          <h1>Print Queue Manager</h1>┬╖
+          <div class=\"user-info\">┬╖
+            <span>Print Configuration</span>┬╖
+            <a href=\"/logout\" class=\"logout-btn\">Logout</a>┬╖
+          </div>┬╖
+        </div>┬╖
+      </header>┬╖┬╖┬╖
+      <div class=\"container\">┬╖
+        <div class=\"config-card\">┬╖
+          <h2>Configure Print Settings</h2>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+            <div class=\"alert alert-error\">Invalid print quality: 600. Must be one of: Normal, Best, Photo</div>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+          <form method=\"POST\" action=\"/configure\">┬╖
+            <div class=\"form-row\">┬╖
+              <div class=\"form-group\">┬╖
+                <label for=\"paperType\">Paper Type</label>┬╖
+                <select id=\"paperType\" name=\"paperType\" required>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"Plain Paper\" selected>┬╖
+                      Plain Paper┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"Glossy\" >┬╖
+                      Glossy┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                </select>┬╖
+              </div>┬╖┬╖┬╖
+              <div class=\"form-group\">┬╖
+                <label for=\"printQuality\">Print Quality (DPI)</label>┬╖
+                <select id=\"printQuality\" name=\"printQuality\" required>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"Normal\" selected>┬╖
+                      Normal DPI┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"Best\" >┬╖
+                      Best DPI┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"Photo\" >┬╖
+                      Photo DPI┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                </select>┬╖
+              </div>┬╖
+            </div>┬╖┬╖┬╖
+            <div class=\"form-row\">┬╖
+              <div class=\"form-group\">┬╖
+                <label for=\"colorMode\">Color Mode</label>┬╖
+                <select id=\"colorMode\" name=\"colorMode\" required>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"Color\" >┬╖
+                      Color┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"Grayscale\" selected>┬╖
+                      Grayscale┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                </select>┬╖
+              </div>┬╖┬╖┬╖
+              <div class=\"form-group\">┬╖
+                <label for=\"paperSize\">Paper Size</label>┬╖
+                <select id=\"paperSize\" name=\"paperSize\" required>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"A4\" selected>┬╖
+                      A4┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"Letter\" >┬╖
+                      Letter┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                    <option value=\"Legal\" >┬╖
+                      Legal┬╖
+                    </option>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+                </select>┬╖
+              </div>┬╖
+            </div>┬╖┬╖┬╖
+            <div class=\"button-group\">┬╖
+              <button type=\"submit\" class=\"btn-primary\">Save Settings</button>┬╖
+              <a href=\"/dashboard\" class=\"btn-secondary\" style=\"text-decoration: none; display: flex; align-items: center; justify-content: center;\">Back to Dashboard</a>┬╖
+            </div>┬╖
+          </form>┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖┬╖
+          <div class=\"defaults-info\">┬╖
+            <strong>Default Settings:</strong><br>┬╖
+            Paper Type: Plain Paper<br>┬╖
+            Print Quality: Normal DPI<br>┬╖
+            Color Mode: Grayscale<br>┬╖
+            Paper Size: A4┬╖
+          </div>┬╖
+        </div>┬╖
+      </div>┬╖
+    </body>┬╖
+    </html>┬╖
+    "
+
+      381 |
+      382 |       expect(configResponse.status).toBe(200);
+    > 383 |       expect(configResponse.text).toContain('saved successfully');
+          |                                   ^
+      384 |
+      385 |       // Step 6: Access job submission page
+      386 |       const submitPageResponse = await request(app)
+
+      at Object.toContain (src/integration.test.js:383:35)
+
+PASS src/models/user.test.js (10.327 s)
+PASS src/models/printJob.test.js (11.031 s)
+PASS src/models/database.test.js (13.935 s)
+PASS src/models/jobHistory.test.js (24.349 s)
+
+Test Suites: 3 failed, 5 passed, 8 total
+Tests:       4 failed, 53 passed, 57 total
+Snapshots:   0 total
+Time:        25.111 s, estimated 28 s
+Ran all test suites.

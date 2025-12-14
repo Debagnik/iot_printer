@@ -6,7 +6,7 @@
 // Default print settings
 const DEFAULT_SETTINGS = {
   paperType: 'Plain Paper',
-  printQuality: 600,
+  printQuality: 'Normal',
   colorMode: 'Grayscale',
   paperSize: 'A4'
 };
@@ -14,7 +14,7 @@ const DEFAULT_SETTINGS = {
 // Available options for each setting
 const AVAILABLE_OPTIONS = {
   paperTypes: ['Plain Paper', 'Glossy'],
-  printQualities: [600, 1200],
+  printQualities: ['Normal', 'Best', 'Photo'],
   colorModes: ['Color', 'Grayscale'],
   paperSizes: ['A4', 'Letter', 'Legal']
 };
@@ -59,8 +59,7 @@ function validateSettings(settings) {
 
   // Validate printQuality
   if (settings.printQuality !== undefined) {
-    const quality = parseInt(settings.printQuality, 10);
-    if (!AVAILABLE_OPTIONS.printQualities.includes(quality)) {
+    if (!AVAILABLE_OPTIONS.printQualities.includes(settings.printQuality)) {
       errors.push(`Invalid print quality: ${settings.printQuality}. Must be one of: ${AVAILABLE_OPTIONS.printQualities.join(', ')}`);
     }
   }
@@ -94,7 +93,7 @@ function validateSettings(settings) {
 function applyDefaults(settings) {
   return {
     paperType: settings.paperType || DEFAULT_SETTINGS.paperType,
-    printQuality: settings.printQuality !== undefined ? parseInt(settings.printQuality, 10) : DEFAULT_SETTINGS.printQuality,
+    printQuality: settings.printQuality || DEFAULT_SETTINGS.printQuality,
     colorMode: settings.colorMode || DEFAULT_SETTINGS.colorMode,
     paperSize: settings.paperSize || DEFAULT_SETTINGS.paperSize
   };
@@ -108,7 +107,7 @@ function applyDefaults(settings) {
 function normalizeSettings(settings) {
   return {
     paperType: String(settings.paperType || DEFAULT_SETTINGS.paperType),
-    printQuality: parseInt(settings.printQuality || DEFAULT_SETTINGS.printQuality, 10),
+    printQuality: String(settings.printQuality || DEFAULT_SETTINGS.printQuality),
     colorMode: String(settings.colorMode || DEFAULT_SETTINGS.colorMode),
     paperSize: String(settings.paperSize || DEFAULT_SETTINGS.paperSize)
   };

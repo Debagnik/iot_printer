@@ -62,6 +62,7 @@ app.post('/configure', requireAuth, configController.postConfig);
 app.get('/submit-job', requireAuth, jobController.getSubmitJob);
 app.post('/submit-job', requireAuth, jobController.postSubmitJob);
 app.get('/job/:jobId', requireAuth, jobController.getJobDetails);
+app.get('/api/job/:jobId/status', requireAuth, jobController.updateJobStatus);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

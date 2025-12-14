@@ -145,7 +145,7 @@ describe('Print Job Submission', () => {
           userId: fc.integer({ min: 1, max: 1000 }),
           documentName: fc.string({ minLength: 5, maxLength: 50 }).filter(s => /^[a-zA-Z0-9_\-\.]+$/.test(s)),
           paperType: fc.constantFrom('Plain Paper', 'Glossy'),
-          printQuality: fc.constantFrom(600, 1200),
+          printQuality: fc.constantFrom('Normal', 'Best', 'Photo'),
           colorMode: fc.constantFrom('Color', 'Grayscale'),
           paperSize: fc.constantFrom('A4', 'Letter', 'Legal')
         }),

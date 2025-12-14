@@ -130,7 +130,7 @@
                   </span>
                 </td>
                 <td><%= job.paperType %></td>
-                <td><%= job.printQuality %> DPI</td>
+                <td><%= job.printQuality %></td>
                 <td><%= job.colorMode %></td>
                 <td><%= job.paperSize %></td>
               </tr>
@@ -257,5 +257,40 @@
       }
     }
   </style>
+
+  <script>
+    // Auto-refresh job statuses every 5 seconds
+    function updateJobStatuses() {
+      const jobRows = document.querySelectorAll('.job-row');
+      
+      jobRows.forEach(row => {
+        const jobId = row.querySelector('td').textContent;
+        const statusCell = row.querySelector('.status-badge');
+        
+        // Only check jobs that are in-progress
+        if (statusCell.classList.contains('status-in-progress')) {
+          fetch(`/api/job/${jobId}/status`)
+            .then(response => response.json())
+            .then(data => {
+              if (data.updated) {
+                // Update the status badge
+                statusCell.classList.remove('status-in-progress');
+                statusCell.classList.add(`status-${data.status}`);
+                statusCell.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+                
+                // Update the row class
+                row.classList.remove('status-in-progress');
+                row.classList.add(`status-${data.status}`);
+              }
+            })
+            .catch(err => console.error('Error updating job status:', err));
+        }
+      });
+    }
+
+    // Check job statuses on page load and then every 5 seconds
+    updateJobStatuses();
+    setInterval(updateJobStatuses, 5000);
+  </script>
 </body>
 </html>

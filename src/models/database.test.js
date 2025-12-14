@@ -172,7 +172,7 @@ describe('Database Persistence', () => {
                   `document_${i}.pdf`,
                   `/tmp/document_${i}.pdf`,
                   'Plain Paper',
-                  600,
+                  'Normal',
                   'Grayscale',
                   'A4',
                   'pending'
@@ -210,7 +210,7 @@ describe('Database Persistence', () => {
               expect(retrievedJobs[i].documentName).toBe(`document_${i}.pdf`);
               expect(retrievedJobs[i].documentPath).toBe(`/tmp/document_${i}.pdf`);
               expect(retrievedJobs[i].paperType).toBe('Plain Paper');
-              expect(retrievedJobs[i].printQuality).toBe(600);
+              expect(retrievedJobs[i].printQuality).toBe('Normal');
               expect(retrievedJobs[i].colorMode).toBe('Grayscale');
               expect(retrievedJobs[i].paperSize).toBe('A4');
               expect(retrievedJobs[i].status).toBe('pending');
