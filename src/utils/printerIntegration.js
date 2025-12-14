@@ -60,6 +60,9 @@ function formatPrinterOptions(settings) {
     'Glossy': '-o MediaType=Glossy'
   };
 
+  console.log(`[PRINTER] formatPrinterOptions input:`, settings);
+  console.log(`[PRINTER] printQuality type: ${typeof settings.printQuality}, value: ${settings.printQuality}`);
+
   // Add paper size
   if (settings.paperSize && paperSizeMap[settings.paperSize]) {
     options.push(`-o media=${paperSizeMap[settings.paperSize]}`);
@@ -67,12 +70,18 @@ function formatPrinterOptions(settings) {
 
   // Add color mode
   if (settings.colorMode && colorModeMap[settings.colorMode]) {
+    console.log(`[PRINTER] Adding color mode: ${settings.colorMode} -> ${colorModeMap[settings.colorMode]}`);
     options.push(colorModeMap[settings.colorMode]);
+  } else {
+    console.log(`[PRINTER] Color mode not found: ${settings.colorMode}`);
   }
 
   // Add DPI
   if (settings.printQuality && dpiMap[settings.printQuality]) {
+    console.log(`[PRINTER] Adding DPI: ${settings.printQuality} -> ${dpiMap[settings.printQuality]}`);
     options.push(dpiMap[settings.printQuality]);
+  } else {
+    console.log(`[PRINTER] DPI not found: ${settings.printQuality}`);
   }
 
   // Add paper type
@@ -80,7 +89,9 @@ function formatPrinterOptions(settings) {
     options.push(paperTypeMap[settings.paperType]);
   }
 
-  return options.join(' ');
+  const result = options.join(' ');
+  console.log(`[PRINTER] Formatted options: ${result}`);
+  return result;
 }
 
 /**
