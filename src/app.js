@@ -6,6 +6,7 @@ const authController = require('./controllers/authController');
 const uploadController = require('./controllers/uploadController');
 const configController = require('./controllers/configController');
 const jobController = require('./controllers/jobController');
+const scannerController = require('./controllers/scannerController');
 const upload = require('./middleware/multerConfig');
 const { requireAuth, requireGuest } = require('./middleware/auth');
 
@@ -63,6 +64,12 @@ app.get('/submit-job', requireAuth, jobController.getSubmitJob);
 app.post('/submit-job', requireAuth, jobController.postSubmitJob);
 app.get('/job/:jobId', requireAuth, jobController.getJobDetails);
 app.get('/api/job/:jobId/status', requireAuth, jobController.updateJobStatus);
+
+// Scanner routes
+app.get('/scanner', requireAuth, scannerController.getScannerPage);
+app.post('/scanner', requireAuth, scannerController.postScanDocument);
+app.get('/scanner/download/:fileName', requireAuth, scannerController.downloadScannedDocument);
+app.delete('/scanner/delete/:fileName', requireAuth, scannerController.deleteScannedDocument);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -3,16 +3,24 @@
 set -e
 
 APP_DIR="/home/admin/iot"
-LOG_FILE="/home/admin/iot/startup.log"
+LOG_DIR="/home/admin/iot/logs"
+LOG_FILE="$LOG_DIR/startup.log"
 
-echo "[$(date)] Starting app" >> "$LOG_FILE"
+# Ensure log directory exists
+mkdir -p "$LOG_DIR"
+
+echo "========================================" >> "$LOG_FILE"
+echo "[$(date)] Boot sequence started" >> "$LOG_FILE"
 
 cd "$APP_DIR"
 
-# Make sure we are on master and up to date
+echo "[$(date)] Fetching latest code" >> "$LOG_FILE"
 /usr/bin/git fetch origin >> "$LOG_FILE" 2>&1
 /usr/bin/git checkout master >> "$LOG_FILE" 2>&1
 /usr/bin/git pull origin master >> "$LOG_FILE" 2>&1
 
-# Start the app
+echo "[$(date)] Installing dependencies (npm ci)" >> "$LOG_FILE"
+/usr/bin/npm ci >> "$LOG_FILE" 2>&1
+
+echo "[$(date)] Starting application" >> "$LOG_FILE"
 /usr/bin/npm start >> "$LOG_FILE" 2>&1
