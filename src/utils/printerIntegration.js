@@ -49,10 +49,11 @@ function formatPrinterOptions(settings) {
     'Grayscale': '-o ColorModel=KGray'
   };
 
-  // DPI mapping to CUPS options
-  const dpiMap = {
-    600: '-o Resolution=600x600dpi',
-    1200: '-o Resolution=1200x1200dpi'
+  // Print quality mapping to CUPS options
+  // HP Ink Tank 310 uses OutputMode instead of Resolution
+  const qualityMap = {
+    600: '-o OutputMode=Normal',
+    1200: '-o OutputMode=Best'
   };
 
   // Paper type mapping to CUPS options
@@ -77,12 +78,12 @@ function formatPrinterOptions(settings) {
     console.log(`[PRINTER] Color mode not found: ${settings.colorMode}`);
   }
 
-  // Add DPI
-  if (settings.printQuality && dpiMap[settings.printQuality]) {
-    console.log(`[PRINTER] Adding DPI: ${settings.printQuality} -> ${dpiMap[settings.printQuality]}`);
-    options.push(dpiMap[settings.printQuality]);
+  // Add print quality
+  if (settings.printQuality && qualityMap[settings.printQuality]) {
+    console.log(`[PRINTER] Adding quality: ${settings.printQuality} -> ${qualityMap[settings.printQuality]}`);
+    options.push(qualityMap[settings.printQuality]);
   } else {
-    console.log(`[PRINTER] DPI not found: ${settings.printQuality}`);
+    console.log(`[PRINTER] Quality not found: ${settings.printQuality}`);
   }
 
   // Add paper type

@@ -26,7 +26,7 @@ describe('Printer Integration Module', () => {
 
       expect(options).toContain('-o media=A4');
       expect(options).toContain('-o ColorModel=KGray');
-      expect(options).toContain('-o Resolution=600x600dpi');
+      expect(options).toContain('-o OutputMode=Normal');
       expect(options).toContain('-o MediaType=Plain');
     });
 
@@ -58,7 +58,7 @@ describe('Printer Integration Module', () => {
       });
     });
 
-    test('should handle high DPI settings', () => {
+    test('should handle high quality settings', () => {
       const settings = {
         paperType: 'Plain Paper',
         printQuality: 1200,
@@ -67,7 +67,7 @@ describe('Printer Integration Module', () => {
       };
 
       const options = printerIntegration.formatPrinterOptions(settings);
-      expect(options).toContain('-o Resolution=1200x1200dpi');
+      expect(options).toContain('-o OutputMode=Best');
     });
 
     test('should handle glossy paper type', () => {
@@ -100,7 +100,7 @@ describe('Printer Integration Module', () => {
             // Verify all settings are represented in options
             expect(options).toContain('-o media=');
             expect(options).toContain('-o ColorModel=');
-            expect(options).toContain('-o Resolution=');
+            expect(options).toContain('-o OutputMode=');
             expect(options).toContain('-o MediaType=');
           }
         ),
