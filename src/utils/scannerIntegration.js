@@ -12,10 +12,49 @@ const exec = util.promisify(require('child_process').exec);
 
 // Scanner configuration
 const SCANNER_CONFIG = {
-  name: 'Ink-Tank-310-series',
+  name: 'hpaio:/usb/Ink_Tank_310_series?serial=CN2577D0JT06PJ', // HP scanner device
   defaultTimeout: 30000,
   scannedFilesDir: path.join(__dirname, '../../scanned_documents')
 };
+
+/**
+ * Auto-detect scanner device name
+ * @returns {Promise<string>}
+ */
+async function detectScannerDevice() {
+  try {
+    if (SCANNER_CONFIG.name && SCANNER_CONFIG.name !== 'default') {
+      return SCANNER_CONFIG.name;
+    }
+
+    console.log('[SCANNER] Auto-detecting scanner device...');
+    
+    // Try to get device list using scanimage -A
+    const { stdout, stderr } = await exec('scanimage -A 2>&1', { timeout: 10000 });
+    const output = stdout + stderr;
+    
+    console.log('[SCANNER] scanimage -A output:', output.substring(0, 200));
+    
+    // Parse output to find device name
+    // Look for lines like: All options specific to device `hpaio:/usb/Ink_Tank_310_series?serial=CN2577D0JT06PJ':
+    const match = output.match(/All options specific to device `([^']+)'/);
+    if (match) {
+      SCANNER_CONFIG.name = match[1];
+      console.log(`[SCANNER] Detected scanner device: ${SCANNER_CONFIG.name}`);
+      return SCANNER_CONFIG.name;
+    }
+
+    // If no device found, try using default scanner
+    console.log('[SCANNER] No device found in list, trying default scanner');
+    SCANNER_CONFIG.name = 'default';
+    return SCANNER_CONFIG.name;
+  } catch (err) {
+    console.error('[SCANNER] Error detecting scanner:', err.message);
+    // Fall back to default
+    SCANNER_CONFIG.name = 'default';
+    return SCANNER_CONFIG.name;
+  }
+}
 
 // Ensure scanned documents directory exists
 if (!fs.existsSync(SCANNER_CONFIG.scannedFilesDir)) {
@@ -28,12 +67,19 @@ if (!fs.existsSync(SCANNER_CONFIG.scannedFilesDir)) {
  */
 async function getAvailableScanners() {
   try {
-    const { stdout } = await exec('scanimage -A', { timeout: SCANNER_CONFIG.defaultTimeout });
+    const { stdout } = await exec('scanimage -l', { timeout: SCANNER_CONFIG.defaultTimeout });
     
     console.log('[SCANNER] Available scanners:', stdout);
     
+    const scanners = stdout.split('\n').filter(line => line.includes('Device:'));
+    
+    // Auto-detect if we found a scanner
+    if (scanners.length > 0 && !SCANNER_CONFIG.name) {
+      await detectScannerDevice();
+    }
+    
     return {
-      scanners: stdout.split('\n').filter(line => line.includes('Device:')),
+      scanners,
       message: 'Scanners retrieved successfully'
     };
   } catch (err) {
@@ -59,6 +105,9 @@ async function scanDocument(format = 'pdf') {
       throw new Error('Invalid format. Must be pdf or png');
     }
 
+    // Auto-detect scanner if not already detected
+    const deviceName = await detectScannerDevice();
+
     const timestamp = Date.now();
     const randomSuffix = Math.floor(Math.random() * 1E9);
     const fileName = `scanned_${timestamp}_${randomSuffix}`;
@@ -68,12 +117,19 @@ async function scanDocument(format = 'pdf') {
     const finalPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}.${format.toLowerCase()}`);
 
     console.log(`[SCANNER] Scanning to temporary file: ${tempPngPath}`);
+    console.log(`[SCANNER] Using device: ${deviceName}`);
 
     // Use scanimage to scan directly to PNG format
-    const scanCommand = `scanimage --device-name="${SCANNER_CONFIG.name}" --format=png > "${tempPngPath}"`;
+    let scanCommand;
+    if (deviceName === 'default') {
+      scanCommand = `scanimage --format=png > "${tempPngPath}"`;
+    } else {
+      scanCommand = `scanimage --device-name="${deviceName}" --format=png > "${tempPngPath}"`;
+    }
     
     try {
-      await exec(scanCommand, { timeout: SCANNER_CONFIG.defaultTimeout });
+      console.log(`[SCANNER] Executing: ${scanCommand}`);
+      await exec(scanCommand, { timeout: SCANNER_CONFIG.defaultTimeout, shell: '/bin/bash' });
       console.log('[SCANNER] Scan completed successfully');
 
       // Convert to desired format if needed
@@ -99,6 +155,7 @@ async function scanDocument(format = 'pdf') {
       };
     } catch (scanError) {
       console.error('[SCANNER] Scan error:', scanError.message);
+      console.error('[SCANNER] Full error:', scanError);
       
       // Clean up temporary file if it exists
       if (fs.existsSync(tempPngPath)) {
@@ -110,11 +167,13 @@ async function scanDocument(format = 'pdf') {
       }
 
       if (scanError.message.includes('not found') || scanError.message.includes('not recognized')) {
-        throw new Error('Scanner not found or SANE not installed');
+        throw new Error('Scanner not found or SANE not installed. Make sure SANE is installed: sudo apt-get install sane sane-utils');
       } else if (scanError.message.includes('Permission denied')) {
-        throw new Error('Permission denied. User may not have access to scanner');
+        throw new Error('Permission denied. Add user to scanner group: sudo usermod -a -G scanner $USER');
       } else if (scanError.message.includes('timeout')) {
         throw new Error('Scanner communication timeout');
+      } else if (scanError.message.includes('Invalid argument')) {
+        throw new Error('Scanner device not found. Check if scanner is connected and SANE is configured.');
       } else {
         throw new Error(`Scan failed: ${scanError.message}`);
       }
