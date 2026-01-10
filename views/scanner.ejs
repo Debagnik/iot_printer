@@ -337,11 +337,15 @@
   <script>
     // Handle form submission
     document.getElementById('scanForm').addEventListener('submit', function(e) {
+      e.preventDefault();
       const scanBtn = document.getElementById('scanBtn');
       const scanningIndicator = document.getElementById('scanningIndicator');
       
       scanBtn.disabled = true;
       scanningIndicator.classList.add('active');
+      
+      // Submit the form after setting the UI state
+      this.submit();
     });
 
     // Delete document function
