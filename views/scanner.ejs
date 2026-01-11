@@ -335,17 +335,45 @@
   </div>
 
   <script>
+    let isScanning = false;
+
     // Handle form submission
     document.getElementById('scanForm').addEventListener('submit', function(e) {
+      if (isScanning) {
+        e.preventDefault();
+        return;
+      }
+
       e.preventDefault();
       const scanBtn = document.getElementById('scanBtn');
       const scanningIndicator = document.getElementById('scanningIndicator');
+      const format = document.getElementById('format').value;
       
+      isScanning = true;
       scanBtn.disabled = true;
       scanningIndicator.classList.add('active');
       
-      // Submit the form after setting the UI state
-      this.submit();
+      // Submit via fetch to prevent form state issues
+      fetch('/scanner', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'format=' + encodeURIComponent(format)
+      })
+      .then(response => response.text())
+      .then(html => {
+        document.open();
+        document.write(html);
+        document.close();
+      })
+      .catch(err => {
+        console.error('Scan error:', err);
+        isScanning = false;
+        scanBtn.disabled = false;
+        scanningIndicator.classList.remove('active');
+        alert('Failed to scan document');
+      });
     });
 
     // Delete document function
