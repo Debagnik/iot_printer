@@ -3,10 +3,24 @@
  * Manages print configuration options and defaults
  */
 
+// Print quality enum with DPI mapping
+const PRINT_QUALITY = {
+  NORMAL: 'Normal',
+  BEST: 'Best',
+  PHOTO: 'Photo'
+};
+
+// DPI mapping for each quality level
+const QUALITY_DPI_MAP = {
+  [PRINT_QUALITY.NORMAL]: 600,
+  [PRINT_QUALITY.BEST]: 1200,
+  [PRINT_QUALITY.PHOTO]: 1200
+};
+
 // Default print settings
 const DEFAULT_SETTINGS = {
   paperType: 'Plain Paper',
-  printQuality: 'Normal',
+  printQuality: PRINT_QUALITY.NORMAL,
   colorMode: 'Grayscale',
   paperSize: 'A4'
 };
@@ -14,7 +28,7 @@ const DEFAULT_SETTINGS = {
 // Available options for each setting
 const AVAILABLE_OPTIONS = {
   paperTypes: ['Plain Paper', 'Glossy'],
-  printQualities: ['Normal', 'Best', 'Photo'],
+  printQualities: [PRINT_QUALITY.NORMAL, PRINT_QUALITY.BEST, PRINT_QUALITY.PHOTO],
   colorModes: ['Color', 'Grayscale'],
   paperSizes: ['A4', 'Letter', 'Legal']
 };
@@ -114,6 +128,8 @@ function normalizeSettings(settings) {
 }
 
 module.exports = {
+  PRINT_QUALITY,
+  QUALITY_DPI_MAP,
   DEFAULT_SETTINGS,
   AVAILABLE_OPTIONS,
   getDefaults,

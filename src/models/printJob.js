@@ -73,10 +73,14 @@ async function submitJobToQueue(jobId, documentPath, settings) {
       throw new Error(`Job ${jobId} not found`);
     }
 
-    // Normalize settings to ensure correct types
+    // Normalize settings to ensure correct types and map quality to DPI
+    const PrintSettings = require('./printSettings');
+    const dpi = PrintSettings.QUALITY_DPI_MAP[settings.printQuality] || 600;
+    
     const normalizedSettings = {
       paperType: String(settings.paperType),
-      printQuality: parseInt(settings.printQuality, 10),
+      printQuality: String(settings.printQuality),
+      printDPI: dpi,
       colorMode: String(settings.colorMode),
       paperSize: String(settings.paperSize)
     };

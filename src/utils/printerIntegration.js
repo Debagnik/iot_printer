@@ -27,7 +27,8 @@ const PRINTER_CONFIG = {
  * Format print options from settings object to CUPS command options
  * @param {Object} settings - Print settings
  * @param {string} settings.paperType - Paper type (Plain Paper, Glossy)
- * @param {number} settings.printQuality - Print quality (600, 1200 DPI)
+ * @param {string} settings.printQuality - Print quality enum (Normal, Best, Photo)
+ * @param {number} settings.printDPI - Print DPI (600, 1200)
  * @param {string} settings.colorMode - Color mode (Color, Grayscale)
  * @param {string} settings.paperSize - Paper size (A4, Letter, Legal)
  * @returns {string} Formatted printer options string
@@ -65,6 +66,7 @@ function formatPrinterOptions(settings) {
 
   console.log(`[PRINTER] formatPrinterOptions input:`, settings);
   console.log(`[PRINTER] printQuality type: ${typeof settings.printQuality}, value: ${settings.printQuality}`);
+  console.log(`[PRINTER] printDPI: ${settings.printDPI}`);
 
   // Add paper size
   if (settings.paperSize && paperSizeMap[settings.paperSize]) {
@@ -85,6 +87,12 @@ function formatPrinterOptions(settings) {
     options.push(qualityMap[settings.printQuality]);
   } else {
     console.log(`[PRINTER] Quality not found: ${settings.printQuality}`);
+  }
+
+  // Add DPI if available
+  if (settings.printDPI) {
+    console.log(`[PRINTER] Adding DPI: ${settings.printDPI}`);
+    options.push(`-o Resolution=${settings.printDPI}x${settings.printDPI}dpi`);
   }
 
   // Add paper type
@@ -417,10 +425,16 @@ function validatePrintSettings(settings) {
     errors.push(`Invalid paper type: ${settings.paperType}`);
   }
 
-  // Validate print quality
-  const validQualities = [600, 1200];
-  if (settings.printQuality && !validQualities.includes(parseInt(settings.printQuality, 10))) {
+  // Validate print quality (enum values)
+  const validQualities = ['Normal', 'Best', 'Photo'];
+  if (settings.printQuality && !validQualities.includes(settings.printQuality)) {
     errors.push(`Invalid print quality: ${settings.printQuality}`);
+  }
+
+  // Validate DPI if provided
+  const validDPIs = [600, 1200];
+  if (settings.printDPI && !validDPIs.includes(settings.printDPI)) {
+    errors.push(`Invalid DPI: ${settings.printDPI}`);
   }
 
   // Validate color mode
