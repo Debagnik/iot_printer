@@ -12,7 +12,20 @@ async function getLogin(req, res) {
  * Display registration page
  */
 async function getRegister(req, res) {
-  res.render('register', { error: null });
+  try {
+    const registrationEnabled = await User.isRegistrationEnabled();
+    
+    if (!registrationEnabled) {
+      return res.render('register', { 
+        error: 'User registration is currently disabled. Please contact an administrator.' 
+      });
+    }
+
+    res.render('register', { error: null });
+  } catch (err) {
+    console.error('Get register error:', err);
+    res.render('register', { error: 'An error occurred' });
+  }
 }
 
 /**
@@ -37,6 +50,7 @@ async function postLogin(req, res) {
     // Create session
     req.session.userId = user.id;
     req.session.username = user.username;
+    req.session.role = user.role;
 
     res.redirect('/dashboard');
   } catch (err) {
@@ -50,6 +64,14 @@ async function postLogin(req, res) {
  */
 async function postRegister(req, res) {
   try {
+    // Check if registration is enabled
+    const registrationEnabled = await User.isRegistrationEnabled();
+    if (!registrationEnabled) {
+      return res.render('register', { 
+        error: 'User registration is currently disabled. Please contact an administrator.' 
+      });
+    }
+
     const { username, password, confirmPassword } = req.body;
 
     // Validate input

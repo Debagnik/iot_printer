@@ -150,6 +150,7 @@ async function getDashboard(req, res) {
     // Jobs are already sorted in reverse chronological order by the database query
     res.render('dashboard', {
       username: req.session.username,
+      role: req.session.role,
       jobs: jobs || []
     });
   } catch (err) {

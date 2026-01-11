@@ -87,6 +87,9 @@
       <h1>Print Queue Manager</h1>
       <div class="user-info">
         <span>Welcome, <%= username %></span>
+        <% if (typeof role !== 'undefined' && role === 'ADMIN') { %>
+          <a href="/admin" style="color: white; text-decoration: none; margin-right: 10px;">Admin Panel</a>
+        <% } %>
         <a href="/logout" class="logout-btn">Logout</a>
       </div>
     </div>

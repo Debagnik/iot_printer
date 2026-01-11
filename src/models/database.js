@@ -52,6 +52,8 @@ function createTables() {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           username TEXT UNIQUE NOT NULL,
           passwordHash TEXT NOT NULL,
+          role TEXT DEFAULT 'USER',
+          enabled INTEGER DEFAULT 1,
           createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
         )
       `, (err) => {
@@ -59,6 +61,34 @@ function createTables() {
           reject(new Error(`Failed to create User table: ${err.message}`));
           return;
         }
+
+        // Migrate existing User table to add missing columns
+        db.all("PRAGMA table_info(User)", (err, columns) => {
+          if (err) {
+            console.warn('Could not check User table schema:', err.message);
+            return;
+          }
+
+          const columnNames = columns.map(col => col.name);
+
+          // Add role column if it doesn't exist
+          if (!columnNames.includes('role')) {
+            db.run(`ALTER TABLE User ADD COLUMN role TEXT DEFAULT 'USER'`, (err) => {
+              if (err && !err.message.includes('duplicate column')) {
+                console.warn('Could not add role column:', err.message);
+              }
+            });
+          }
+
+          // Add enabled column if it doesn't exist
+          if (!columnNames.includes('enabled')) {
+            db.run(`ALTER TABLE User ADD COLUMN enabled INTEGER DEFAULT 1`, (err) => {
+              if (err && !err.message.includes('duplicate column')) {
+                console.warn('Could not add enabled column:', err.message);
+              }
+            });
+          }
+        });
       });
 
       // PrintJob table
@@ -96,6 +126,20 @@ function createTables() {
       `, (err) => {
         if (err) {
           reject(new Error(`Failed to create Session table: ${err.message}`));
+          return;
+        }
+      });
+
+      // Settings table for system-wide configuration
+      db.run(`
+        CREATE TABLE IF NOT EXISTS Settings (
+          key TEXT PRIMARY KEY,
+          value TEXT,
+          updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `, (err) => {
+        if (err) {
+          reject(new Error(`Failed to create Settings table: ${err.message}`));
           return;
         }
         resolve();
@@ -198,12 +242,13 @@ function getUserById(userId) {
  * Create a new user
  * @param {string} username
  * @param {string} passwordHash
+ * @param {string} role - User role (USER or ADMIN)
  * @returns {Promise<{lastID: number, changes: number}>}
  */
-function createUser(username, passwordHash) {
+function createUser(username, passwordHash, role = 'USER') {
   return run(
-    'INSERT INTO User (username, passwordHash) VALUES (?, ?)',
-    [username, passwordHash]
+    'INSERT INTO User (username, passwordHash, role) VALUES (?, ?, ?)',
+    [username, passwordHash, role]
   );
 }
 
@@ -299,6 +344,96 @@ function closeDatabase() {
   });
 }
 
+/**
+ * Get all users (admin only)
+ * @returns {Promise<Array>}
+ */
+function getAllUsers() {
+  return query('SELECT id, username, role, createdAt FROM User ORDER BY createdAt DESC');
+}
+
+/**
+ * Delete a user by ID (admin only)
+ * @param {number} userId
+ * @returns {Promise<{lastID: number, changes: number}>}
+ */
+function deleteUser(userId) {
+  return run('DELETE FROM User WHERE id = ?', [userId]);
+}
+
+/**
+ * Update user role (admin only)
+ * @param {number} userId
+ * @param {string} role - USER or ADMIN
+ * @returns {Promise<{lastID: number, changes: number}>}
+ */
+function updateUserRole(userId, role) {
+  return run('UPDATE User SET role = ? WHERE id = ?', [role, userId]);
+}
+
+/**
+ * Update user password (admin only)
+ * @param {number} userId
+ * @param {string} passwordHash
+ * @returns {Promise<{lastID: number, changes: number}>}
+ */
+function updateUserPassword(userId, passwordHash) {
+  return run('UPDATE User SET passwordHash = ? WHERE id = ?', [passwordHash, userId]);
+}
+
+/**
+ * Get all print jobs (admin only)
+ * @returns {Promise<Array>}
+ */
+function getAllPrintJobs() {
+  return query(
+    `SELECT pj.*, u.username FROM PrintJob pj 
+     JOIN User u ON pj.userId = u.id 
+     ORDER BY pj.submittedAt DESC`
+  );
+}
+
+/**
+ * Delete a print job by ID (admin only)
+ * @param {number} jobId
+ * @returns {Promise<{lastID: number, changes: number}>}
+ */
+function deletePrintJob(jobId) {
+  return run('DELETE FROM PrintJob WHERE id = ?', [jobId]);
+}
+
+/**
+ * Update user enabled status (admin only)
+ * @param {number} userId
+ * @param {boolean} enabled
+ * @returns {Promise<{lastID: number, changes: number}>}
+ */
+function updateUserEnabled(userId, enabled) {
+  return run('UPDATE User SET enabled = ? WHERE id = ?', [enabled ? 1 : 0, userId]);
+}
+
+/**
+ * Get system setting
+ * @param {string} key
+ * @returns {Promise<any>}
+ */
+function getSetting(key) {
+  return queryOne('SELECT value FROM Settings WHERE key = ?', [key]);
+}
+
+/**
+ * Set system setting
+ * @param {string} key
+ * @param {string} value
+ * @returns {Promise<{lastID: number, changes: number}>}
+ */
+function setSetting(key, value) {
+  return run(
+    'INSERT OR REPLACE INTO Settings (key, value, updatedAt) VALUES (?, ?, CURRENT_TIMESTAMP)',
+    [key, value]
+  );
+}
+
 module.exports = {
   initializeDatabase,
   query,
@@ -313,6 +448,15 @@ module.exports = {
   updatePrintJobStatus,
   completePrintJob,
   closeDatabase,
+  getAllUsers,
+  deleteUser,
+  updateUserRole,
+  updateUserPassword,
+  getAllPrintJobs,
+  deletePrintJob,
+  updateUserEnabled,
+  getSetting,
+  setSetting,
   get db() {
     return db;
   }

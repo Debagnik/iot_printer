@@ -10,8 +10,10 @@ const uploadController = require('./controllers/uploadController');
 const configController = require('./controllers/configController');
 const jobController = require('./controllers/jobController');
 const scannerController = require('./controllers/scannerController');
+const adminController = require('./controllers/adminController');
 const upload = require('./middleware/multerConfig');
 const { requireAuth, requireGuest } = require('./middleware/auth');
+const { requireAdmin } = require('./middleware/adminAuth');
 
 const app = express();
 
@@ -76,6 +78,20 @@ app.get('/scanner', requireAuth, scannerController.getScannerPage);
 app.post('/scanner', requireAuth, scannerController.postScanDocument);
 app.get('/scanner/download/:fileName', requireAuth, scannerController.downloadScannedDocument);
 app.delete('/scanner/delete/:fileName', requireAuth, scannerController.deleteScannedDocument);
+
+// Admin routes
+app.get('/admin', requireAuth, requireAdmin, adminController.getAdminDashboard);
+app.get('/api/admin/users', requireAuth, requireAdmin, adminController.getAllUsers);
+app.post('/api/admin/users', requireAuth, requireAdmin, adminController.createUser);
+app.delete('/api/admin/users/:userId', requireAuth, requireAdmin, adminController.deleteUser);
+app.put('/api/admin/users/:userId/role', requireAuth, requireAdmin, adminController.updateUserRole);
+app.post('/api/admin/users/:userId/reset-password', requireAuth, requireAdmin, adminController.resetUserPassword);
+app.put('/api/admin/users/:userId/enabled', requireAuth, requireAdmin, adminController.toggleUserEnabled);
+app.get('/api/admin/registration', requireAuth, requireAdmin, adminController.getRegistrationStatus);
+app.post('/api/admin/registration', requireAuth, requireAdmin, adminController.setRegistrationStatus);
+app.get('/api/admin/jobs', requireAuth, requireAdmin, adminController.getAllPrintJobs);
+app.delete('/api/admin/jobs/:jobId', requireAuth, requireAdmin, adminController.deletePrintJob);
+app.post('/api/admin/cleanup', requireAuth, requireAdmin, adminController.cleanupJobFiles);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
