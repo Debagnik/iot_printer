@@ -367,7 +367,7 @@ function closeDatabase() {
  * @returns {Promise<Array>}
  */
 function getAllUsers() {
-  return query('SELECT id, username, role, createdAt FROM User ORDER BY createdAt DESC');
+  return query('SELECT id, username, role, enabled, createdAt FROM User ORDER BY createdAt DESC');
 }
 
 /**
