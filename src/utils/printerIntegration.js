@@ -12,7 +12,6 @@ const execAsync = util.promisify(exec);
  */
 
 // Detect platform
-const os = require('os');
 require('dotenv').config();
 
 // Detect platform
@@ -181,7 +180,7 @@ async function submitJobToPrinter(documentPath, settings) {
   try {
     console.log(`[PRINTER] submitJobToPrinter called with path: ${documentPath}`);
     console.log(`[PRINTER] Platform detected: ${os.platform()}`);
-    
+
     // Validate document exists
     if (!fs.existsSync(documentPath)) {
       console.error(`[PRINTER] Document file not found: ${documentPath}`);
@@ -265,7 +264,7 @@ async function submitJobToPrinterWindows(documentPath, settings) {
 async function submitJobToPrinterLinux(documentPath, settings) {
   try {
     console.log(`[PRINTER] Attempting to submit job: ${documentPath}`);
-    
+
     // Format printer options for CUPS
     const printerOptions = formatPrinterOptions(settings);
     console.log(`[PRINTER] Formatted options: ${printerOptions}`);
@@ -296,7 +295,7 @@ async function submitJobToPrinterLinux(documentPath, settings) {
       };
     } catch (execError) {
       console.error(`[PRINTER] Command execution error: ${execError.message}`);
-      
+
       // Handle specific error cases
       if (execError.message.includes('No such file or directory')) {
         throw new Error('Printer not found or CUPS not installed');
@@ -360,7 +359,7 @@ async function isJobInQueue(jobId) {
   try {
     const queueStatus = await getPrintQueueStatus();
     const jobInQueue = queueStatus.jobs.some(job => job.jobId.includes(jobId));
-    
+
     if (jobInQueue) {
       return {
         inQueue: true,
