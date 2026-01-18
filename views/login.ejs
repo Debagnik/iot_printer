@@ -55,14 +55,8 @@
               <button type="submit">Login</button>
             </form>
 
-            <% // Only show registration link if we didn't receive an error saying it's disabled // ACTUALLY, the
-              requirement
-              is "if the registration id set to off by admin then on the login page there should be no link to registration as well"
-              // We can pass a variable to login view or check via AJAX, but passing variable is cleaner. // However,
-              authController.getLogin doesn't pass 'registrationEnabled' . // Implementation Plan
-              Step: "login.ejs: specific conditional" . // I need to update authController to pass this var, OR just
-              handle the error. // Let's assume for now we rely on the error message or I will update authController
-              quickly next. %>
+            <%# Only show registration link if we didn't receive an error saying it's disabled Note: authController
+              should pass 'registrationEnabled' to control this visibility. %>
               <!-- We will need to update authController to pass 'registrationEnabled' to hide this link fully -->
               <% if (typeof registrationEnabled==='undefined' || registrationEnabled) { %>
                 <div class="register-link" style="text-align: center; margin-top: 20px;">
