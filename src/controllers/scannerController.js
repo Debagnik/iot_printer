@@ -1,14 +1,15 @@
 const scannerIntegration = require('../utils/scannerIntegration');
-const fs = require('fs');
+const ScanJob = require('../models/scanJob');
 const path = require('path');
+const fs = require('fs');
 
 /**
  * Display scanner page
  */
 async function getScannerPage(req, res) {
   try {
-    // Get list of scanned documents
-    const scannedDocs = await scannerIntegration.getScannedDocuments(req.session.userId);
+    // Get list of scanned documents from DB
+    const scannedDocs = await ScanJob.getUserScanJobs(req.session.userId);
 
     res.render('scanner', {
       username: req.session.username,
@@ -31,9 +32,10 @@ async function postScanDocument(req, res) {
 
     // Validate format
     if (!format || !['pdf', 'png'].includes(format.toLowerCase())) {
+      const scannedDocs = await ScanJob.getUserScanJobs(req.session.userId);
       return res.render('scanner', {
         username: req.session.username,
-        scannedDocuments: await scannerIntegration.getScannedDocuments(req.session.userId),
+        scannedDocuments: scannedDocs,
         error: 'Invalid format. Please select PDF or PNG',
         success: null
       });
@@ -45,16 +47,20 @@ async function postScanDocument(req, res) {
     const scanResult = await scannerIntegration.scanDocument(format);
 
     if (!scanResult.success) {
+      const scannedDocs = await ScanJob.getUserScanJobs(req.session.userId);
       return res.render('scanner', {
         username: req.session.username,
-        scannedDocuments: await scannerIntegration.getScannedDocuments(req.session.userId),
+        scannedDocuments: scannedDocs,
         error: scanResult.message,
         success: null
       });
     }
 
+    // Save to DB
+    await ScanJob.createScanJob(req.session.userId, scanResult.fileName, scanResult.filePath);
+
     // Get updated list of scanned documents
-    const scannedDocs = await scannerIntegration.getScannedDocuments(req.session.userId);
+    const scannedDocs = await ScanJob.getUserScanJobs(req.session.userId);
 
     res.render('scanner', {
       username: req.session.username,
@@ -74,20 +80,26 @@ async function postScanDocument(req, res) {
 async function downloadScannedDocument(req, res) {
   try {
     const { fileName } = req.params;
+    // For now, simpler to just rely on fileName matching a record for this user, 
+    // but strict DB lookup is better.
+    // However, existing integration relies on filenames. 
+    // Let's rely on physical file presence verified by DB record for ownership.
 
-    if (!fileName) {
-      return res.status(400).json({ error: 'File name required' });
+    // Check ownership via DB
+    const jobs = await ScanJob.getUserScanJobs(req.session.userId);
+    const job = jobs.find(j => j.fileName === fileName);
+
+    if (!job) {
+      return res.status(404).json({ error: 'Document not found or access denied' });
     }
 
-    // Get document
-    const docResult = await scannerIntegration.getScannedDocument(fileName);
+    const filePath = job.filePath; // assuming absolute or relative correct path
 
-    if (!docResult.success) {
-      return res.status(404).json({ error: docResult.message });
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'File missing from disk' });
     }
 
-    // Send file
-    res.download(docResult.filePath, fileName, (err) => {
+    res.download(filePath, fileName, (err) => {
       if (err) {
         console.error('Download error:', err);
       }
@@ -105,24 +117,15 @@ async function deleteScannedDocument(req, res) {
   try {
     const { fileName } = req.params;
 
-    if (!fileName) {
-      return res.status(400).json({ error: 'File name required' });
+    // Find job by filename and user
+    const jobs = await ScanJob.getUserScanJobs(req.session.userId);
+    const job = jobs.find(j => j.fileName === fileName);
+
+    if (!job) {
+      return res.status(404).json({ error: 'Document not found' });
     }
 
-    // Validate file name
-    if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
-      return res.status(400).json({ error: 'Invalid file name' });
-    }
-
-    const filePath = path.join(scannerIntegration.SCANNER_CONFIG.scannedFilesDir, fileName);
-
-    // Verify file exists
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'File not found' });
-    }
-
-    // Delete file
-    fs.unlinkSync(filePath);
+    await ScanJob.deleteScanJob(job.id, req.session.userId, false);
 
     res.json({ success: true, message: 'Document deleted successfully' });
   } catch (err) {

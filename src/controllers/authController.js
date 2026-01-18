@@ -5,7 +5,8 @@ const User = require('../models/user');
  */
 async function getLogin(req, res) {
   const success = req.query.success || null;
-  res.render('login', { error: null, success });
+  const registrationEnabled = await User.isRegistrationEnabled();
+  res.render('login', { error: null, success, registrationEnabled });
 }
 
 /**
@@ -14,10 +15,10 @@ async function getLogin(req, res) {
 async function getRegister(req, res) {
   try {
     const registrationEnabled = await User.isRegistrationEnabled();
-    
+
     if (!registrationEnabled) {
-      return res.render('register', { 
-        error: 'User registration is currently disabled. Please contact an administrator.' 
+      return res.render('register', {
+        error: 'User registration is currently disabled. Please contact an administrator.'
       });
     }
 
@@ -67,8 +68,8 @@ async function postRegister(req, res) {
     // Check if registration is enabled
     const registrationEnabled = await User.isRegistrationEnabled();
     if (!registrationEnabled) {
-      return res.render('register', { 
-        error: 'User registration is currently disabled. Please contact an administrator.' 
+      return res.render('register', {
+        error: 'User registration is currently disabled. Please contact an administrator.'
       });
     }
 

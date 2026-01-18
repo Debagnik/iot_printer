@@ -130,6 +130,24 @@ function createTables() {
         }
       });
 
+      // ScanJob table
+      db.run(`
+        CREATE TABLE IF NOT EXISTS ScanJob (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          userId INTEGER NOT NULL,
+          fileName TEXT NOT NULL,
+          filePath TEXT NOT NULL,
+          status TEXT DEFAULT 'completed',
+          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+        )
+      `, (err) => {
+        if (err) {
+          reject(new Error(`Failed to create ScanJob table: ${err.message}`));
+          return;
+        }
+      });
+
       // Settings table for system-wide configuration
       db.run(`
         CREATE TABLE IF NOT EXISTS Settings (
@@ -207,7 +225,7 @@ function run(sql, params = []) {
       return;
     }
 
-    db.run(sql, params, function(err) {
+    db.run(sql, params, function (err) {
       if (err) {
         reject(new Error(`Query failed: ${err.message}`));
       } else {
@@ -434,6 +452,62 @@ function setSetting(key, value) {
   );
 }
 
+/**
+ * Insert a scan job
+ * @param {number} userId
+ * @param {string} fileName
+ * @param {string} filePath
+ * @returns {Promise<{lastID: number, changes: number}>}
+ */
+function insertScanJob(userId, fileName, filePath) {
+  return run(
+    'INSERT INTO ScanJob (userId, fileName, filePath) VALUES (?, ?, ?)',
+    [userId, fileName, filePath]
+  );
+}
+
+/**
+ * Get scan jobs for a user
+ * @param {number} userId
+ * @returns {Promise<Array>}
+ */
+function getScanJobs(userId) {
+  return query(
+    'SELECT * FROM ScanJob WHERE userId = ? ORDER BY createdAt DESC',
+    [userId]
+  );
+}
+
+/**
+ * Get all scan jobs (admin only)
+ * @returns {Promise<Array>}
+ */
+function getAllScanJobs() {
+  return query(
+    `SELECT sj.*, u.username FROM ScanJob sj
+     JOIN User u ON sj.userId = u.id
+     ORDER BY sj.createdAt DESC`
+  );
+}
+
+/**
+ * Delete a scan job
+ * @param {number} id
+ * @returns {Promise<{lastID: number, changes: number}>}
+ */
+function deleteScanJob(id) {
+  return run('DELETE FROM ScanJob WHERE id = ?', [id]);
+}
+
+/**
+ * Get a specific scan job
+ * @param {number} id
+ * @returns {Promise<any>}
+ */
+function getScanJob(id) {
+  return queryOne('SELECT * FROM ScanJob WHERE id = ?', [id]);
+}
+
 module.exports = {
   initializeDatabase,
   query,
@@ -457,6 +531,11 @@ module.exports = {
   updateUserEnabled,
   getSetting,
   setSetting,
+  insertScanJob,
+  getScanJobs,
+  getAllScanJobs,
+  deleteScanJob,
+  getScanJob,
   get db() {
     return db;
   }

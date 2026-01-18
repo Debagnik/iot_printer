@@ -18,7 +18,7 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 async function cleanupUploadedDocuments() {
   try {
     console.log('[CLEANUP] Starting cleanup of uploaded documents');
-    
+
     if (!fs.existsSync(UPLOADS_DIR)) {
       console.log('[CLEANUP] Uploads directory does not exist');
       return { deleted: 0, message: 'Uploads directory does not exist' };
@@ -30,7 +30,7 @@ async function cleanupUploadedDocuments() {
 
     files.forEach(file => {
       const filePath = path.join(UPLOADS_DIR, file);
-      
+
       try {
         const stats = fs.statSync(filePath);
         const age = now - stats.mtimeMs;
@@ -59,39 +59,44 @@ async function cleanupUploadedDocuments() {
   }
 }
 
+const ScanJob = require('../models/scanJob');
+
 /**
  * Clean up old scanned documents (older than 1 day)
+ * Uses database to find old jobs and removes them using the model
  * @returns {Promise<{deleted: number, message: string}>}
  */
 async function cleanupScannedDocuments() {
   try {
     console.log('[CLEANUP] Starting cleanup of scanned documents');
-    
-    if (!fs.existsSync(SCANNED_DOCS_DIR)) {
-      console.log('[CLEANUP] Scanned documents directory does not exist');
-      return { deleted: 0, message: 'Scanned documents directory does not exist' };
-    }
 
-    const files = fs.readdirSync(SCANNED_DOCS_DIR);
-    const now = Date.now();
-    let deletedCount = 0;
+    // Get all users to check their scans? No, simpler to query DB for old entries directly if model supported it.
+    // Since model doesn't support "get all old scans", we might need to iterate or add a method.
+    // Let's add a method to ScanJob/database to "delete old scans".
+    // Alternatively, iterate all files and check if they match a DB record?
+    // Best approach: Query DB for scans > 1 day old, then call deleteScanJob for each.
 
-    files.forEach(file => {
-      const filePath = path.join(SCANNED_DOCS_DIR, file);
-      
-      try {
-        const stats = fs.statSync(filePath);
-        const age = now - stats.mtimeMs;
+    // We need a way to get old scans. Let's reach into DB directly here or add to model. 
+    // Accessing DB directly is easiest given specific cleanup logic.
+    const oneDayAgo = new Date(Date.now() - ONE_DAY_MS).toISOString();
 
-        if (age > ONE_DAY_MS) {
-          fs.unlinkSync(filePath);
-          deletedCount++;
-          console.log(`[CLEANUP] Deleted old scanned document: ${file}`);
-        }
-      } catch (err) {
-        console.error(`[CLEANUP] Error processing file ${file}:`, err.message);
-      }
+    // Find old scans
+    const oldScans = await new Promise((resolve, reject) => {
+      db.db.all('SELECT * FROM ScanJob WHERE createdAt < ?', [oneDayAgo], (err, rows) => {
+        if (err) reject(err);
+        else resolve(rows || []);
+      });
     });
+
+    let deletedCount = 0;
+    for (const scan of oldScans) {
+      try {
+        await ScanJob.deleteScanJob(scan.id, null, true); // Admin/System delete
+        deletedCount++;
+      } catch (e) {
+        console.error(`[CLEANUP] Failed to delete scan ${scan.id}:`, e.message);
+      }
+    }
 
     console.log(`[CLEANUP] Cleanup of scanned documents completed. Deleted: ${deletedCount}`);
     return {
@@ -114,15 +119,15 @@ async function cleanupScannedDocuments() {
 async function cleanupOldPrintJobs() {
   try {
     console.log('[CLEANUP] Starting cleanup of old print jobs from database');
-    
+
     const oneDayAgo = new Date(Date.now() - ONE_DAY_MS).toISOString();
-    
+
     // Delete print jobs older than 1 day
     const result = await new Promise((resolve, reject) => {
       db.db.run(
         'DELETE FROM PrintJob WHERE submittedAt < ?',
         [oneDayAgo],
-        function(err) {
+        function (err) {
           if (err) {
             reject(err);
           } else {
@@ -153,7 +158,7 @@ async function cleanupOldPrintJobs() {
 async function runAllCleanup() {
   try {
     console.log('[CLEANUP] ========== STARTING DAILY CLEANUP ==========');
-    
+
     const uploadResult = await cleanupUploadedDocuments();
     const scannedResult = await cleanupScannedDocuments();
     const jobsResult = await cleanupOldPrintJobs();

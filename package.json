@@ -5,9 +5,7 @@
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "test": "jest",
-    "test:watch": "jest --watch"
+    "dev": "nodemon src/app.js"
   },
   "keywords": [
     "print",
@@ -26,9 +24,6 @@
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
-    "fast-check": "^3.13.0",
-    "jest": "^29.7.0",
-    "nodemon": "^3.0.1",
-    "supertest": "^6.3.3"
+    "nodemon": "^3.0.1"
   }
 }

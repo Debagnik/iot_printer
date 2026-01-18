@@ -92,6 +92,8 @@ app.post('/api/admin/registration', requireAuth, requireAdmin, adminController.s
 app.get('/api/admin/jobs', requireAuth, requireAdmin, adminController.getAllPrintJobs);
 app.delete('/api/admin/jobs/:jobId', requireAuth, requireAdmin, adminController.deletePrintJob);
 app.post('/api/admin/cleanup', requireAuth, requireAdmin, adminController.cleanupJobFiles);
+app.get('/api/admin/scans', requireAuth, requireAdmin, adminController.getAllScanJobs);
+app.delete('/api/admin/scans/:scanId', requireAuth, requireAdmin, adminController.deleteScanJob);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

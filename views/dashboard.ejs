@@ -1,115 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Print Queue Manager</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+  <link rel="stylesheet" href="/style.css">
+  <script>
+    // Theme toggle logic
+    function toggleTheme() {
+      const current = localStorage.getItem('theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
     }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #f5f5f5;
-      min-height: 100vh;
-    }
-
-    header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    h1 {
-      font-size: 24px;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .logout-btn {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
-
-    .logout-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .welcome-message {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      margin-bottom: 30px;
-    }
-
-    .welcome-message h2 {
-      color: #333;
-      margin-bottom: 10px;
-    }
-
-    .welcome-message p {
-      color: #666;
-    }
-  </style>
+    // Init theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
+
 <body>
   <header>
     <div class="header-content">
       <h1>Print Queue Manager</h1>
       <div class="user-info">
+        <button class="theme-toggle" onclick="toggleTheme()"
+          style="background:none; border:1px solid currentColor; padding: 4px 10px;">Theme</button>
         <span>Welcome, <%= username %></span>
-        <% if (typeof role !== 'undefined' && role === 'ADMIN') { %>
-          <a href="/admin" style="color: white; text-decoration: none; margin-right: 10px;">Admin Panel</a>
-        <% } %>
-        <a href="/logout" class="logout-btn">Logout</a>
+        <% if (typeof role !=='undefined' && role==='ADMIN' ) { %>
+          <a href="/admin" style="color: white; text-decoration: none; margin-right: 10px; font-weight: bold;">Admin
+            Panel</a>
+          <% } %>
+            <a href="/logout" class="logout-btn">Logout</a>
       </div>
     </div>
   </header>
 
   <div class="container">
-    <div class="welcome-message">
+    <div class="welcome-message card">
       <h2>Dashboard</h2>
       <p>Welcome to the Print Queue Manager.</p>
     </div>
 
-    <div class="actions">
-      <a href="/upload" class="action-btn">Upload Document</a>
-      <a href="/scanner" class="action-btn" style="margin-left: 10px;">Scan Document</a>
-      <button type="button" class="action-btn" style="margin-left: 10px;" onclick="runCleanup()">Clean Up Storage</button>
+    <div class="actions" style="margin-bottom: 30px;">
+      <a href="/upload" class="action-btn"
+        style="display:inline-block; padding:12px 24px; background:var(--primary-color); color:white; border-radius:4px; text-decoration:none;">Upload
+        Document</a>
+      <a href="/scanner" class="action-btn"
+        style="display:inline-block; padding:12px 24px; background:var(--primary-color); color:white; border-radius:4px; text-decoration:none; margin-left: 10px;">Scan
+        Document</a>
+      <button type="button" class="action-btn" style="margin-left: 10px;" onclick="runCleanup()">Clean Up
+        Storage</button>
     </div>
 
-    <div class="job-history">
+    <div class="job-history card">
       <h3>Print Job History</h3>
-      <% if (jobs && jobs.length > 0) { %>
+      <% if (jobs && jobs.length> 0) { %>
         <table class="jobs-table">
           <thead>
             <tr>
@@ -124,154 +72,54 @@
             </tr>
           </thead>
           <tbody>
-            <% jobs.forEach(job => { %>
+            <% jobs.forEach(job=> { %>
               <tr class="job-row status-<%= job.status %>">
-                <td><%= job.id %></td>
-                <td><%= job.documentName %></td>
-                <td><%= new Date(job.submittedAt).toLocaleString() %></td>
+                <td>
+                  <%= job.id %>
+                </td>
+                <td>
+                  <%= job.documentName %>
+                </td>
+                <td>
+                  <%= new Date(job.submittedAt).toLocaleString() %>
+                </td>
                 <td>
                   <span class="status-badge status-<%= job.status %>">
                     <%= job.status.charAt(0).toUpperCase() + job.status.slice(1) %>
                   </span>
                 </td>
-                <td><%= job.paperType %></td>
-                <td><%= job.printQuality %></td>
-                <td><%= job.colorMode %></td>
-                <td><%= job.paperSize %></td>
+                <td>
+                  <%= job.paperType %>
+                </td>
+                <td>
+                  <%= job.printQuality %>
+                </td>
+                <td>
+                  <%= job.colorMode %>
+                </td>
+                <td>
+                  <%= job.paperSize %>
+                </td>
               </tr>
-            <% }); %>
+              <% }); %>
           </tbody>
         </table>
-      <% } else { %>
-        <p class="no-jobs">No print jobs yet. <a href="/upload">Upload a document</a> to get started.</p>
-      <% } %>
+        <% } else { %>
+          <p class="no-jobs" style="text-align:center; padding:20px;">No print jobs yet. <a href="/upload">Upload a
+              document</a> to get started.</p>
+          <% } %>
     </div>
   </div>
-
-  <style>
-    .actions {
-      margin-bottom: 30px;
-    }
-
-    .action-btn {
-      display: inline-block;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 4px;
-      text-decoration: none;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-    }
-
-    .job-history {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .job-history h3 {
-      color: #333;
-      margin-bottom: 20px;
-      font-size: 18px;
-    }
-
-    .jobs-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    .jobs-table thead {
-      background: #f9f9f9;
-      border-bottom: 2px solid #e0e0e0;
-    }
-
-    .jobs-table th {
-      padding: 12px;
-      text-align: left;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .jobs-table td {
-      padding: 12px;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .jobs-table tbody tr:hover {
-      background: #f5f5f5;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .status-badge.status-pending {
-      background: #fff3cd;
-      color: #856404;
-    }
-
-    .status-badge.status-in-progress {
-      background: #cfe2ff;
-      color: #084298;
-    }
-
-    .status-badge.status-completed {
-      background: #d1e7dd;
-      color: #0f5132;
-    }
-
-    .status-badge.status-failed {
-      background: #f8d7da;
-      color: #842029;
-    }
-
-    .no-jobs {
-      color: #666;
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .no-jobs a {
-      color: #667eea;
-      text-decoration: none;
-    }
-
-    .no-jobs a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 768px) {
-      .jobs-table {
-        font-size: 12px;
-      }
-
-      .jobs-table th,
-      .jobs-table td {
-        padding: 8px;
-      }
-    }
-  </style>
 
   <script>
     // Auto-refresh job statuses every 5 seconds
     function updateJobStatuses() {
       const jobRows = document.querySelectorAll('.job-row');
-      
+
       jobRows.forEach(row => {
         const jobId = row.querySelector('td').textContent;
         const statusCell = row.querySelector('.status-badge');
-        
+
         // Only check jobs that are in-progress
         if (statusCell.classList.contains('status-in-progress')) {
           fetch(`/api/job/${jobId}/status`)
@@ -282,7 +130,7 @@
                 statusCell.classList.remove('status-in-progress');
                 statusCell.classList.add(`status-${data.status}`);
                 statusCell.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-                
+
                 // Update the row class
                 row.classList.remove('status-in-progress');
                 row.classList.add(`status-${data.status}`);
@@ -303,19 +151,19 @@
         fetch('/api/cleanup', {
           method: 'POST'
         })
-        .then(response => response.json())
-        .then(data => {
-          alert(`Cleanup completed!\n\nDeleted:\n- ${data.details.uploadedDocs} uploaded documents\n- ${data.details.scannedDocs} scanned documents\n- ${data.details.printJobs} print jobs`);
-          btn.disabled = false;
-          btn.textContent = 'Clean Up Storage';
-          location.reload();
-        })
-        .catch(err => {
-          console.error('Error:', err);
-          alert('Cleanup failed. Check console for details.');
-          btn.disabled = false;
-          btn.textContent = 'Clean Up Storage';
-        });
+          .then(response => response.json())
+          .then(data => {
+            alert(`Cleanup completed!\n\nDeleted:\n- ${data.details.uploadedDocs} uploaded documents\n- ${data.details.scannedDocs} scanned documents\n- ${data.details.printJobs} print jobs`);
+            btn.disabled = false;
+            btn.textContent = 'Clean Up Storage';
+            location.reload();
+          })
+          .catch(err => {
+            console.error('Error:', err);
+            alert('Cleanup failed. Check console for details.');
+            btn.disabled = false;
+            btn.textContent = 'Clean Up Storage';
+          });
       }
     }
 
@@ -324,4 +172,5 @@
     setInterval(updateJobStatuses, 5000);
   </script>
 </body>
+
 </html>

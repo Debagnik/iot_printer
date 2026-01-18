@@ -12,12 +12,16 @@ const execAsync = util.promisify(exec);
  */
 
 // Detect platform
+const os = require('os');
+require('dotenv').config();
+
+// Detect platform
 const isWindows = os.platform() === 'win32';
 const isLinux = os.platform() === 'linux';
 
 // Printer configuration
 const PRINTER_CONFIG = {
-  name: 'Ink-Tank-310-series',
+  name: process.env.PRINTER_NAME || 'Ink-Tank-310-series',
   defaultTimeout: 5000,
   retryAttempts: 3,
   retryDelay: 1000

@@ -1,5 +1,6 @@
 const User = require('../models/user');
 const db = require('../models/database');
+const ScanJob = require('../models/scanJob');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -10,12 +11,14 @@ async function getAdminDashboard(req, res) {
   try {
     const users = await User.getAllUsers();
     const jobs = await db.getAllPrintJobs();
+    const scans = await ScanJob.getAllScanJobs();
 
     res.render('admin-dashboard', {
       username: req.session.username,
       userId: req.session.userId,
       users,
       jobs,
+      scans,
       error: null,
       success: null
     });
@@ -179,6 +182,37 @@ async function deletePrintJob(req, res) {
   }
 }
 
+
+/**
+ * Get all scan jobs (admin only)
+ */
+async function getAllScanJobs(req, res) {
+  try {
+    const scans = await ScanJob.getAllScanJobs();
+    res.json({ success: true, scans });
+  } catch (err) {
+    console.error('Get all scans error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+/**
+ * Delete a scan job (admin only)
+ */
+async function deleteScanJob(req, res) {
+  try {
+    const { scanId } = req.params;
+
+    // Check rights - Admin is calling
+    await ScanJob.deleteScanJob(scanId, req.session.userId, true);
+
+    res.json({ success: true, message: 'Scan job deleted successfully' });
+  } catch (err) {
+    console.error('Delete scan error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
 /**
  * Clean up local job files (admin only)
  */
@@ -295,5 +329,7 @@ module.exports = {
   cleanupJobFiles,
   toggleUserEnabled,
   getRegistrationStatus,
-  setRegistrationStatus
+  setRegistrationStatus,
+  getAllScanJobs,
+  deleteScanJob
 };
