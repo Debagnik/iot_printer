@@ -10,10 +10,11 @@ async function getScannerPage(req, res) {
   try {
     // Get list of scanned documents from DB
     const scannedDocs = await ScanJob.getUserScanJobs(req.session.userId);
+    const enrichedDocs = await ScanJob.enrichScanJobs(scannedDocs);
 
     res.render('scanner', {
       username: req.session.username,
-      scannedDocuments: scannedDocs,
+      scannedDocuments: enrichedDocs,
       error: null,
       success: null
     });
@@ -33,9 +34,10 @@ async function postScanDocument(req, res) {
     // Validate format
     if (!format || !['pdf', 'png'].includes(format.toLowerCase())) {
       const scannedDocs = await ScanJob.getUserScanJobs(req.session.userId);
+      const enrichedDocs = await ScanJob.enrichScanJobs(scannedDocs);
       return res.render('scanner', {
         username: req.session.username,
-        scannedDocuments: scannedDocs,
+        scannedDocuments: enrichedDocs,
         error: 'Invalid format. Please select PDF or PNG',
         success: null
       });
@@ -48,9 +50,10 @@ async function postScanDocument(req, res) {
 
     if (!scanResult.success) {
       const scannedDocs = await ScanJob.getUserScanJobs(req.session.userId);
+      const enrichedDocs = await ScanJob.enrichScanJobs(scannedDocs);
       return res.render('scanner', {
         username: req.session.username,
-        scannedDocuments: scannedDocs,
+        scannedDocuments: enrichedDocs,
         error: scanResult.message,
         success: null
       });
@@ -61,10 +64,11 @@ async function postScanDocument(req, res) {
 
     // Get updated list of scanned documents
     const scannedDocs = await ScanJob.getUserScanJobs(req.session.userId);
+    const enrichedDocs = await ScanJob.enrichScanJobs(scannedDocs);
 
     res.render('scanner', {
       username: req.session.username,
-      scannedDocuments: scannedDocs,
+      scannedDocuments: enrichedDocs,
       error: null,
       success: `Document scanned successfully! Saved as ${format.toUpperCase()}`
     });

@@ -12,7 +12,8 @@ const exec = util.promisify(require('child_process').exec);
 
 // Scanner configuration
 const SCANNER_CONFIG = {
-  name: 'hpaio:/usb/Ink_Tank_310_series?serial=CN2577D0JT06PJ', // HP scanner device
+  // Construct scanner Name from env vars if available, otherwise default to auto-detect logic or specific string
+  name: `hpaio:/usb/${process.env.SCANNER_NAME}?serial=${process.env.SCANNER_SERIAL_ID}`,
   defaultTimeout: 30000,
   scannedFilesDir: path.join(__dirname, '../../scanned_documents')
 };
@@ -28,15 +29,15 @@ async function detectScannerDevice() {
     }
 
     console.log('[SCANNER] Auto-detecting scanner device...');
-    
+
     // Try to get device list using scanimage -A
     const { stdout, stderr } = await exec('scanimage -A 2>&1', { timeout: 10000 });
     const output = stdout + stderr;
-    
+
     console.log('[SCANNER] scanimage -A output:', output.substring(0, 200));
-    
+
     // Parse output to find device name
-    // Look for lines like: All options specific to device `hpaio:/usb/Ink_Tank_310_series?serial=CN2577D0JT06PJ':
+    // Look for lines like: All options specific to device `hpaio:/usb':
     const match = output.match(/All options specific to device `([^']+)'/);
     if (match) {
       SCANNER_CONFIG.name = match[1];
@@ -68,16 +69,16 @@ if (!fs.existsSync(SCANNER_CONFIG.scannedFilesDir)) {
 async function getAvailableScanners() {
   try {
     const { stdout } = await exec('scanimage -l', { timeout: SCANNER_CONFIG.defaultTimeout });
-    
+
     console.log('[SCANNER] Available scanners:', stdout);
-    
+
     const scanners = stdout.split('\n').filter(line => line.includes('Device:'));
-    
+
     // Auto-detect if we found a scanner
     if (scanners.length > 0 && !SCANNER_CONFIG.name) {
       await detectScannerDevice();
     }
-    
+
     return {
       scanners,
       message: 'Scanners retrieved successfully'
@@ -111,14 +112,14 @@ async function scanDocument(format = 'pdf') {
     const timestamp = Date.now();
     const randomSuffix = Math.floor(Math.random() * 1E9);
     const fileName = `scanned_${timestamp}_${randomSuffix}`;
-    
+
     // Scan to temporary PNG file first (supported by scanner)
     const tempPngPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}_temp.png`);
     const finalPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}.${format.toLowerCase()}`);
 
     // Scan to temporary PNM file first (default format, more reliable)
     const tempPnmPath = path.join(SCANNER_CONFIG.scannedFilesDir, `${fileName}_temp.pnm`);
-    
+
     console.log(`[SCANNER] Scanning to temporary PNM file: ${tempPnmPath}`);
     console.log(`[SCANNER] Using device: ${deviceName}`);
 
@@ -129,7 +130,7 @@ async function scanDocument(format = 'pdf') {
     } else {
       scanCommand = `scanimage --device-name="${deviceName}" > "${tempPnmPath}"`;
     }
-    
+
     try {
       console.log(`[SCANNER] Executing: ${scanCommand}`);
       await exec(scanCommand, { timeout: SCANNER_CONFIG.defaultTimeout, shell: '/bin/bash' });
@@ -154,7 +155,7 @@ async function scanDocument(format = 'pdf') {
             fs.renameSync(tempPnmPath, finalPath);
           }
         }
-        
+
         // Remove temporary PNM file if it still exists
         if (fs.existsSync(tempPnmPath)) {
           fs.unlinkSync(tempPnmPath);
@@ -177,7 +178,7 @@ async function scanDocument(format = 'pdf') {
             fs.renameSync(tempPnmPath, finalPath);
           }
         }
-        
+
         // Remove temporary PNM file if it still exists
         if (fs.existsSync(tempPnmPath)) {
           fs.unlinkSync(tempPnmPath);
@@ -195,7 +196,7 @@ async function scanDocument(format = 'pdf') {
     } catch (scanError) {
       console.error('[SCANNER] Scan error:', scanError.message);
       console.error('[SCANNER] Full error:', scanError);
-      
+
       // Clean up temporary files if they exist
       if (fs.existsSync(tempPnmPath)) {
         try {

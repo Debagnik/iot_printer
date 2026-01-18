@@ -11,7 +11,8 @@ async function getAdminDashboard(req, res) {
   try {
     const users = await User.getAllUsers();
     const jobs = await db.getAllPrintJobs();
-    const scans = await ScanJob.getAllScanJobs();
+    const rawScans = await ScanJob.getAllScanJobs();
+    const scans = await ScanJob.enrichScanJobs(rawScans);
 
     res.render('admin-dashboard', {
       username: req.session.username,
@@ -189,7 +190,8 @@ async function deletePrintJob(req, res) {
 async function getAllScanJobs(req, res) {
   try {
     const scans = await ScanJob.getAllScanJobs();
-    res.json({ success: true, scans });
+    const enrichedScans = await ScanJob.enrichScanJobs(scans);
+    res.json({ success: true, scans: enrichedScans });
   } catch (err) {
     console.error('Get all scans error:', err);
     res.status(500).json({ success: false, error: err.message });

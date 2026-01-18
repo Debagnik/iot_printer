@@ -69,9 +69,46 @@ async function deleteScanJob(jobId, requestingUserId, isAdmin) {
     return db.deleteScanJob(jobId);
 }
 
+/**
+ * Enrichment helper to add expiresAt and size to scan jobs
+ * @param {Array} jobs
+ * @returns {Promise<Array>}
+ */
+async function enrichScanJobs(jobs) {
+    if (!jobs) return [];
+
+    return Promise.all(jobs.map(async (job) => {
+        // Calculate Expiry (24 hours from creation)
+        const createdAt = new Date(job.createdAt);
+        const expiresAt = new Date(createdAt.getTime() + 24 * 60 * 60 * 1000);
+
+        // Get file size
+        let size = 0;
+        try {
+            if (job.filePath) {
+                // Ensure filePath is handled correctly given it might be relative
+                // scannerController previously used fs.promises.stat directly
+                // If filePath is absolute or relative to CWD, it should work.
+                await fs.access(job.filePath);
+                const stats = await fs.stat(job.filePath);
+                size = stats.size;
+            }
+        } catch (e) {
+            // File might not exist or other error, ignore size
+        }
+
+        return {
+            ...job,
+            expiresAt,
+            size
+        };
+    }));
+}
+
 module.exports = {
     createScanJob,
     getUserScanJobs,
     getAllScanJobs,
-    deleteScanJob
+    deleteScanJob,
+    enrichScanJobs
 };
