@@ -53,7 +53,16 @@ async function postLogin(req, res) {
     req.session.username = user.username;
     req.session.role = user.role;
 
-    res.redirect('/dashboard');
+    console.log('User logged in:', username, 'ID:', user.id);
+    console.log('Session before save:', req.session);
+
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.render('login', { error: 'Failed to create session' });
+      }
+      res.redirect('/dashboard');
+    });
   } catch (err) {
     console.error('Login error:', err);
     res.render('login', { error: 'An error occurred during login' });
