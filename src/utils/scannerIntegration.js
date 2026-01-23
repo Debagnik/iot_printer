@@ -97,9 +97,9 @@ async function getAvailableScanners() {
  * @param {string} format - Output format ('pdf' or 'png')
  * @returns {Promise<{success: boolean, filePath: string, fileName: string, message: string}>}
  */
-async function scanDocument(format = 'pdf') {
+async function scanDocument(format = 'pdf', mode = 'Color') {
   try {
-    console.log(`[SCANNER] Starting scan with format: ${format}`);
+    console.log(`[SCANNER] Starting scan with format: ${format}, mode: ${mode}`);
 
     // Validate format
     if (!['pdf', 'png'].includes(format.toLowerCase())) {
@@ -126,9 +126,9 @@ async function scanDocument(format = 'pdf') {
     // Use scanimage to scan to PNM format (default, most reliable)
     let scanCommand;
     if (deviceName === 'default') {
-      scanCommand = `scanimage > "${tempPnmPath}"`;
+      scanCommand = `scanimage --mode "${mode}" > "${tempPnmPath}"`;
     } else {
-      scanCommand = `scanimage --device-name="${deviceName}" > "${tempPnmPath}"`;
+      scanCommand = `scanimage --device-name="${deviceName}" --mode "${mode}" > "${tempPnmPath}"`;
     }
 
     try {
