@@ -7,10 +7,12 @@ async function getConfig(req, res) {
   try {
     const options = PrintSettings.getAvailableOptions();
     const defaults = PrintSettings.getDefaults();
+    const pageCount = (req.session.uploadedFile && req.session.uploadedFile.pageCount) || null;
 
     res.render('configure', {
       options,
       defaults,
+      pageCount,
       error: null,
       success: null
     });
@@ -25,14 +27,16 @@ async function getConfig(req, res) {
  */
 async function postConfig(req, res) {
   try {
-    const { paperType, printQuality, colorMode, paperSize } = req.body;
+    const { paperType, printQuality, colorMode, paperSize, doubleSided, numCopies } = req.body;
 
     // Create settings object from form data
     const settings = {
       paperType,
       printQuality,
       colorMode,
-      paperSize
+      paperSize,
+      doubleSided,
+      numCopies
     };
 
     // Validate settings
@@ -41,10 +45,12 @@ async function postConfig(req, res) {
     if (!validation.isValid) {
       const options = PrintSettings.getAvailableOptions();
       const defaults = PrintSettings.getDefaults();
+      const pageCount = (req.session.uploadedFile && req.session.uploadedFile.pageCount) || null;
 
       return res.render('configure', {
         options,
         defaults,
+        pageCount,
         error: validation.errors.join('; '),
         success: null
       });
@@ -58,10 +64,12 @@ async function postConfig(req, res) {
 
     const options = PrintSettings.getAvailableOptions();
     const defaults = PrintSettings.getDefaults();
+    const pageCount = (req.session.uploadedFile && req.session.uploadedFile.pageCount) || null;
 
     res.render('configure', {
       options,
       defaults,
+      pageCount,
       error: null,
       success: 'Print settings saved successfully'
     });
@@ -69,10 +77,12 @@ async function postConfig(req, res) {
     console.error('Config submission error:', err);
     const options = PrintSettings.getAvailableOptions();
     const defaults = PrintSettings.getDefaults();
+    const pageCount = (req.session.uploadedFile && req.session.uploadedFile.pageCount) || null;
 
     res.render('configure', {
       options,
       defaults,
+      pageCount,
       error: 'An error occurred while saving settings',
       success: null
     });

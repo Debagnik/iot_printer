@@ -22,7 +22,9 @@ const DEFAULT_SETTINGS = {
   paperType: 'Plain Paper',
   printQuality: PRINT_QUALITY.NORMAL,
   colorMode: 'Grayscale',
-  paperSize: 'A4'
+  paperSize: 'A4',
+  doubleSided: false,
+  numCopies: 1
 };
 
 // Available options for each setting
@@ -92,6 +94,14 @@ function validateSettings(settings) {
     }
   }
 
+  // Validate numCopies
+  if (settings.numCopies !== undefined) {
+    const copies = parseInt(settings.numCopies, 10);
+    if (isNaN(copies) || copies < 1 || copies > 99) {
+      errors.push(`Invalid number of copies: ${settings.numCopies}. Must be between 1 and 99`);
+    }
+  }
+
   return {
     isValid: errors.length === 0,
     errors
@@ -109,7 +119,9 @@ function applyDefaults(settings) {
     paperType: settings.paperType || DEFAULT_SETTINGS.paperType,
     printQuality: settings.printQuality || DEFAULT_SETTINGS.printQuality,
     colorMode: settings.colorMode || DEFAULT_SETTINGS.colorMode,
-    paperSize: settings.paperSize || DEFAULT_SETTINGS.paperSize
+    paperSize: settings.paperSize || DEFAULT_SETTINGS.paperSize,
+    doubleSided: settings.doubleSided !== undefined ? settings.doubleSided : DEFAULT_SETTINGS.doubleSided,
+    numCopies: settings.numCopies || DEFAULT_SETTINGS.numCopies
   };
 }
 
@@ -123,7 +135,9 @@ function normalizeSettings(settings) {
     paperType: String(settings.paperType || DEFAULT_SETTINGS.paperType),
     printQuality: String(settings.printQuality || DEFAULT_SETTINGS.printQuality),
     colorMode: String(settings.colorMode || DEFAULT_SETTINGS.colorMode),
-    paperSize: String(settings.paperSize || DEFAULT_SETTINGS.paperSize)
+    paperSize: String(settings.paperSize || DEFAULT_SETTINGS.paperSize),
+    doubleSided: settings.doubleSided === 'on' || settings.doubleSided === true || settings.doubleSided === 'true',
+    numCopies: parseInt(settings.numCopies, 10) || DEFAULT_SETTINGS.numCopies
   };
 }
 

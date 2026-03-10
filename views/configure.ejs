@@ -263,6 +263,36 @@
           </div>
         </div>
 
+        <div class="form-row">
+          <div class="form-group">
+            <label for="numCopies">Number of Copies</label>
+            <input type="number" id="numCopies" name="numCopies" min="1" max="99" value="<%= defaults.numCopies || 1 %>" required
+              style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+          </div>
+
+          <div class="form-group">
+            <label for="doubleSided">Double-Sided Printing</label>
+            <div class="toggle-container">
+              <label class="toggle-switch">
+                <input type="checkbox" id="doubleSided" name="doubleSided" <%= defaults.doubleSided ? 'checked' : '' %>>
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-label" id="doubleSidedLabel">Off</span>
+            </div>
+          </div>
+        </div>
+
+        <% if (pageCount) { %>
+        <div class="paper-estimate" id="paperEstimate">
+          <div class="estimate-icon">📄</div>
+          <div class="estimate-details">
+            <div class="estimate-label">Paper Sheets Needed</div>
+            <div class="estimate-value" id="sheetsNeeded">--</div>
+            <div class="estimate-breakdown" id="sheetsBreakdown"></div>
+          </div>
+        </div>
+        <% } %>
+
         <div class="button-group">
           <button type="submit" class="btn-primary">Save Settings</button>
           <a href="/dashboard" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Back to Dashboard</a>
@@ -275,9 +305,152 @@
         Paper Type: <%= defaults.paperType %><br>
         Print Quality: <%= defaults.printQuality %><br>
         Color Mode: <%= defaults.colorMode %><br>
-        Paper Size: <%= defaults.paperSize %>
+        Paper Size: <%= defaults.paperSize %><br>
+        Double-Sided: <%= defaults.doubleSided ? 'Yes' : 'No' %><br>
+        Copies: <%= defaults.numCopies || 1 %>
       </div>
     </div>
   </div>
+
+  <style>
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 28px;
+      margin-bottom: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      border-radius: 28px;
+      transition: 0.3s;
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .toggle-switch input:checked + .toggle-slider:before {
+      transform: translateX(24px);
+    }
+
+    .toggle-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #666;
+    }
+
+    .paper-estimate {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: linear-gradient(135deg, #e8eaf6 0%, #f3e5f5 100%);
+      padding: 18px 20px;
+      border-radius: 8px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-left: 4px solid #667eea;
+    }
+
+    .estimate-icon {
+      font-size: 32px;
+    }
+
+    .estimate-details {
+      flex: 1;
+    }
+
+    .estimate-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #666;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .estimate-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .estimate-breakdown {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+    }
+  </style>
+
+  <script>
+    (function () {
+      var pageCount = <%= pageCount || 'null' %>;
+      var doubleSidedEl = document.getElementById('doubleSided');
+      var numCopiesEl = document.getElementById('numCopies');
+      var labelEl = document.getElementById('doubleSidedLabel');
+      var sheetsEl = document.getElementById('sheetsNeeded');
+      var breakdownEl = document.getElementById('sheetsBreakdown');
+
+      function updateLabel() {
+        if (labelEl) {
+          labelEl.textContent = doubleSidedEl.checked ? 'On' : 'Off';
+        }
+      }
+
+      function updateEstimate() {
+        if (!pageCount || !sheetsEl) return;
+        var copies = parseInt(numCopiesEl.value, 10) || 1;
+        var sheets;
+        var breakdown;
+        if (doubleSidedEl.checked) {
+          sheets = Math.ceil(pageCount / 2) * copies + 1;
+          breakdown = Math.ceil(pageCount / 2) + ' sheets/copy × ' + copies + ' copies + 1 buffer = ' + sheets + ' sheets';
+        } else {
+          sheets = (copies * pageCount) + 1;
+          breakdown = pageCount + ' pages × ' + copies + ' copies + 1 buffer = ' + sheets + ' sheets';
+        }
+        sheetsEl.textContent = sheets;
+        breakdownEl.textContent = breakdown;
+      }
+
+      if (doubleSidedEl) {
+        doubleSidedEl.addEventListener('change', function () { updateLabel(); updateEstimate(); });
+      }
+      if (numCopiesEl) {
+        numCopiesEl.addEventListener('input', updateEstimate);
+      }
+
+      updateLabel();
+      updateEstimate();
+    })();
+  </script>
 </body>
 </html>

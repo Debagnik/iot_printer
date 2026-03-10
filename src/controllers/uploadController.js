@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs').promises;
 const fileValidator = require('../utils/fileValidator');
+const pdfUtils = require('../utils/pdfUtils');
 
 /**
  * Display upload page
@@ -9,7 +10,7 @@ async function getUpload(req, res) {
   try {
     const supportedFormats = fileValidator.getSupportedExtensions().join(', ');
     const maxSizeMB = fileValidator.getFileSizeLimitMB();
-    
+
     res.render('upload', {
       username: req.session.username,
       supportedFormats,
@@ -45,7 +46,7 @@ async function postUpload(req, res) {
     if (!fileValidator.validateFileFormat(filename, mimetype)) {
       // Delete the uploaded file
       await fs.unlink(filePath);
-      
+
       const supportedFormats = fileValidator.getSupportedExtensions().join(', ');
       return res.render('upload', {
         username: req.session.username,
@@ -60,7 +61,7 @@ async function postUpload(req, res) {
     if (!fileValidator.validateFileSize(size)) {
       // Delete the uploaded file
       await fs.unlink(filePath);
-      
+
       const maxSizeMB = fileValidator.getFileSizeLimitMB();
       return res.render('upload', {
         username: req.session.username,
@@ -71,6 +72,18 @@ async function postUpload(req, res) {
       });
     }
 
+    // Compute page count for PDFs
+    let pageCount = null;
+    const ext = path.extname(filename).toLowerCase();
+    if (ext === '.pdf') {
+      try {
+        pageCount = await pdfUtils.getPageCount(filePath);
+        console.log(`[UPLOAD] PDF page count: ${pageCount}`);
+      } catch (pageErr) {
+        console.warn('[UPLOAD] Could not determine page count:', pageErr.message);
+      }
+    }
+
     // Store file information in session for next step (print configuration)
     req.session.uploadedFile = {
       filename,
@@ -78,7 +91,8 @@ async function postUpload(req, res) {
       mimetype,
       size,
       path: filePath,
-      uploadedAt: new Date().toISOString()
+      uploadedAt: new Date().toISOString(),
+      pageCount: pageCount
     };
 
     res.render('upload', {
@@ -91,7 +105,7 @@ async function postUpload(req, res) {
     });
   } catch (err) {
     console.error('Upload error:', err);
-    
+
     // Clean up uploaded file if it exists
     if (req.file && req.file.path) {
       try {
