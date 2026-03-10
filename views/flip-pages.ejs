@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flip Pages - Print Queue Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 24px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .flip-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .step-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .flip-card h2 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 22px;
+        }
+
+        .flip-card .subtitle {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        /* Flip animation */
+        .flip-animation {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+        }
+
+        .page-icon {
+            position: absolute;
+            width: 70px;
+            height: 90px;
+            border-radius: 6px;
+            border: 2px solid #667eea;
+            background: #f0f0ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .page-back {
+            left: 10px;
+            top: 10px;
+            z-index: 1;
+            opacity: 0.5;
+        }
+
+        .page-front {
+            left: 30px;
+            top: 5px;
+            z-index: 2;
+            background: white;
+            animation: flipPage 2.5s ease-in-out infinite;
+        }
+
+        @keyframes flipPage {
+
+            0%,
+            100% {
+                transform: rotateY(0deg);
+            }
+
+            40%,
+            60% {
+                transform: rotateY(180deg);
+            }
+        }
+
+        .flip-arrow {
+            position: absolute;
+            right: 0;
+            top: 35px;
+            font-size: 36px;
+            color: #764ba2;
+            animation: bounceArrow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes bounceArrow {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(8px);
+            }
+        }
+
+        /* Steps */
+        .steps {
+            text-align: left;
+            margin: 0 auto 30px;
+            max-width: 440px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        .step-number {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .step-text {
+            color: #444;
+            font-size: 14px;
+            line-height: 1.5;
+            padding-top: 3px;
+        }
+
+        /* Job info */
+        .job-info {
+            background: #f9f9f9;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 13px;
+        }
+
+        .job-info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .job-info-label {
+            color: #999;
+            text-transform: uppercase;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .job-info-value {
+            color: #333;
+            font-weight: 600;
+        }
+
+        /* Button */
+        .confirm-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s, transform 0.2s;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .confirm-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .confirm-btn:active {
+            transform: translateY(0);
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        @media (max-width: 600px) {
+            .flip-card {
+                padding: 30px 20px;
+            }
+
+            .job-info {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Print Queue Manager</h1>
+            <div class="user-info">
+                <span>Double-Sided Print</span>
+                <a href="/logout" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="flip-card">
+            <div class="step-badge">STEP 2 OF 2</div>
+            <h2>Flip Your Pages</h2>
+            <p class="subtitle">The front side (odd pages) has been sent to the printer.</p>
+
+            <div class="flip-animation">
+                <div class="page-icon page-back">1</div>
+                <div class="page-icon page-front">2</div>
+                <div class="flip-arrow">↻</div>
+            </div>
+
+            <div class="alert-info">
+                <strong>Important:</strong> Wait for the printer to finish printing the front side. Then remove the
+                printed stack, flip it over, and place it back into the paper tray before continuing.
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">Wait for the printer to finish printing all odd-numbered pages (front side).
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">Remove the entire printed stack from the output tray.</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">Flip the stack upside-down and place it back into the paper input tray.</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">Click the button below to print the even-numbered pages (back side).</div>
+                </div>
+            </div>
+
+            <div class="job-info">
+                <div class="job-info-item">
+                    <span class="job-info-label">Job ID</span>
+                    <span class="job-info-value">
+                        <%= jobId %>
+                    </span>
+                </div>
+                <div class="job-info-item">
+                    <span class="job-info-label">Document</span>
+                    <span class="job-info-value">
+                        <%= documentName %>
+                    </span>
+                </div>
+                <div class="job-info-item">
+                    <span class="job-info-label">Copies</span>
+                    <span class="job-info-value">
+                        <%= numCopies %>
+                    </span>
+                </div>
+            </div>
+
+            <form method="POST" action="/submit-job/confirm-flip">
+                <button type="submit" class="confirm-btn">
+                    ✅ I've Flipped the Pages — Print Back Side
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

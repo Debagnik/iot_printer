@@ -68,6 +68,7 @@ app.post('/configure', requireAuth, configController.postConfig);
 
 // Job submission routes
 app.get('/submit-job', requireAuth, jobController.getSubmitJob);
+app.post('/submit-job/confirm-flip', requireAuth, jobController.postConfirmFlip);
 app.post('/submit-job', requireAuth, jobController.postSubmitJob);
 app.get('/job/:jobId', requireAuth, jobController.getJobDetails);
 app.get('/api/job/:jobId/status', requireAuth, jobController.updateJobStatus);

@@ -1,5 +1,6 @@
 const PrintJob = require('../models/printJob');
 const PrintSettings = require('../models/printSettings');
+const pdfUtils = require('../utils/pdfUtils');
 const fs = require('fs').promises;
 const path = require('path');
 
@@ -54,6 +55,59 @@ async function postSubmitJob(req, res) {
     const uploadedFile = req.session.uploadedFile;
     const settings = req.session.printSettings || PrintSettings.getDefaults();
 
+    // ===== DOUBLE-SIDED FLOW =====
+    if (settings.doubleSided) {
+      try {
+        // Split PDF into odd and even pages
+        const { oddPagesPath, evenPagesPath, totalPages } = await pdfUtils.splitPdfOddEven(uploadedFile.path);
+        console.log(`[JOB] Double-sided: split into odd (${oddPagesPath}) and even (${evenPagesPath}), ${totalPages} total pages`);
+
+        // Create print job in database
+        const jobResult = await PrintJob.createPrintJob({
+          userId: req.session.userId,
+          documentName: uploadedFile.originalName,
+          documentPath: uploadedFile.path,
+          paperType: settings.paperType,
+          printQuality: settings.printQuality,
+          colorMode: settings.colorMode,
+          paperSize: settings.paperSize
+        });
+
+        const jobId = jobResult.jobId;
+
+        // Print odd pages (front side)
+        const oddResult = await PrintJob.submitJobToQueue(
+          jobId,
+          oddPagesPath,
+          settings
+        );
+
+        console.log(`[JOB] Odd pages print result:`, oddResult);
+
+        // Store duplex state in session for the flip confirmation step
+        req.session.duplexJob = {
+          jobId,
+          evenPagesPath,
+          oddPagesPath,
+          documentName: uploadedFile.originalName,
+          settings,
+          oddResult
+        };
+
+        // Render the flip-pages intermediary view
+        return res.render('flip-pages', {
+          username: req.session.username,
+          jobId,
+          documentName: uploadedFile.originalName,
+          numCopies: settings.numCopies || 1
+        });
+      } catch (duplexErr) {
+        console.error('Double-sided job error:', duplexErr);
+        return res.status(500).render('error', { error: `Double-sided print failed: ${duplexErr.message}` });
+      }
+    }
+
+    // ===== SINGLE-SIDED FLOW (unchanged) =====
     // Create print job in database
     const jobResult = await PrintJob.createPrintJob({
       userId: req.session.userId,
@@ -226,9 +280,66 @@ async function manualCleanup(req, res) {
   }
 }
 
+/**
+ * Handle double-sided confirmation after user flips pages
+ * Prints the even-numbered pages (back side)
+ */
+async function postConfirmFlip(req, res) {
+  try {
+    const duplexJob = req.session.duplexJob;
+
+    if (!duplexJob) {
+      return res.render('error', {
+        error: 'No duplex job in progress. Please start a new print job.'
+      });
+    }
+
+    const { jobId, evenPagesPath, documentName, settings, oddPagesPath } = duplexJob;
+
+    console.log(`[JOB] Confirm flip: printing even pages for job ${jobId}`);
+
+    // Print even pages (back side)
+    const evenResult = await PrintJob.submitJobToQueue(
+      jobId,
+      evenPagesPath,
+      settings
+    );
+
+    console.log(`[JOB] Even pages print result:`, evenResult);
+
+    // Clean up temp files
+    try {
+      await fs.unlink(oddPagesPath);
+      await fs.unlink(evenPagesPath);
+      console.log('[JOB] Cleaned up temp split PDF files');
+    } catch (cleanErr) {
+      console.warn('[JOB] Could not clean up temp files:', cleanErr.message);
+    }
+
+    // Clear session data
+    req.session.duplexJob = null;
+    req.session.uploadedFile = null;
+    req.session.printSettings = null;
+
+    // Render confirmation page
+    res.render('job-confirmation', {
+      username: req.session.username,
+      jobId,
+      documentName,
+      settings,
+      submissionResult: evenResult,
+      error: null
+    });
+  } catch (err) {
+    console.error('Confirm flip error:', err);
+    res.status(500).render('error', { error: `Failed to print back side: ${err.message}` });
+  }
+}
+
 module.exports = {
   getSubmitJob,
   postSubmitJob,
+  postConfirmFlip,
   getJobDetails,
   getDashboard,
   updateJobStatus,

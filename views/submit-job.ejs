@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -200,6 +201,7 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <div class="header-content">
@@ -216,58 +218,106 @@
       <h2>Review and Submit Print Job</h2>
 
       <% if (error) { %>
-        <div class="alert alert-error"><%= error %></div>
-      <% } %>
-
-      <% if (success) { %>
-        <div class="alert alert-success"><%= success %></div>
-      <% } %>
-
-      <form method="POST" action="/submit-job">
-        <div class="section">
-          <h3>Document Information</h3>
-          <div class="info-row">
-            <span class="info-label">File Name:</span>
-            <span class="info-value"><%= uploadedFile.originalName %></span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">File Size:</span>
-            <span class="info-value"><%= (uploadedFile.size / 1024).toFixed(2) %> KB</span>
-          </div>
-          <div class="info-row">
-            <span class="info-label">Uploaded:</span>
-            <span class="info-value"><%= new Date(uploadedFile.uploadedAt).toLocaleString() %></span>
-          </div>
+        <div class="alert alert-error">
+          <%= error %>
         </div>
+        <% } %>
 
-        <div class="section">
-          <h3>Print Settings</h3>
-          <div class="settings-grid">
-            <div class="setting-item">
-              <span class="setting-label">Paper Type</span>
-              <span class="setting-value"><%= settings.paperType %></span>
+          <% if (success) { %>
+            <div class="alert alert-success">
+              <%= success %>
             </div>
-            <div class="setting-item">
-              <span class="setting-label">Print Quality</span>
-              <span class="setting-value"><%= settings.printQuality %></span>
-            </div>
-            <div class="setting-item">
-              <span class="setting-label">Color Mode</span>
-              <span class="setting-value"><%= settings.colorMode %></span>
-            </div>
-            <div class="setting-item">
-              <span class="setting-label">Paper Size</span>
-              <span class="setting-value"><%= settings.paperSize %></span>
-            </div>
-          </div>
-        </div>
+            <% } %>
 
-        <div class="button-group">
-          <button type="submit" class="btn-primary">Submit to Printer</button>
-          <a href="/upload" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Cancel</a>
-        </div>
-      </form>
+              <form method="POST" action="/submit-job">
+                <div class="section">
+                  <h3>Document Information</h3>
+                  <div class="info-row">
+                    <span class="info-label">File Name:</span>
+                    <span class="info-value">
+                      <%= uploadedFile.originalName %>
+                    </span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">File Size:</span>
+                    <span class="info-value">
+                      <%= (uploadedFile.size / 1024).toFixed(2) %> KB
+                    </span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-label">Uploaded:</span>
+                    <span class="info-value">
+                      <%= new Date(uploadedFile.uploadedAt).toLocaleString() %>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="section">
+                  <h3>Print Settings</h3>
+                  <div class="settings-grid">
+                    <div class="setting-item">
+                      <span class="setting-label">Paper Type</span>
+                      <span class="setting-value">
+                        <%= settings.paperType %>
+                      </span>
+                    </div>
+                    <div class="setting-item">
+                      <span class="setting-label">Print Quality</span>
+                      <span class="setting-value">
+                        <%= settings.printQuality %>
+                      </span>
+                    </div>
+                    <div class="setting-item">
+                      <span class="setting-label">Color Mode</span>
+                      <span class="setting-value">
+                        <%= settings.colorMode %>
+                      </span>
+                    </div>
+                    <div class="setting-item">
+                      <span class="setting-label">Paper Size</span>
+                      <span class="setting-value">
+                        <%= settings.paperSize %>
+                      </span>
+                    </div>
+                    <div class="setting-item">
+                      <span class="setting-label">Double-Sided</span>
+                      <span class="setting-value">
+                        <%= settings.doubleSided ? 'Yes' : 'No' %>
+                      </span>
+                    </div>
+                    <div class="setting-item">
+                      <span class="setting-label">Copies</span>
+                      <span class="setting-value">
+                        <%= settings.numCopies || 1 %>
+                      </span>
+                    </div>
+                    <% if (uploadedFile.pageCount) { var copies=settings.numCopies || 1; var
+                      pages=uploadedFile.pageCount; var sheets=settings.doubleSided ? Math.ceil(pages / 2) * copies + 1
+                      : (copies * pages) + 1; %>
+                      <div class="setting-item">
+                        <span class="setting-label">Pages</span>
+                        <span class="setting-value">
+                          <%= pages %>
+                        </span>
+                      </div>
+                      <div class="setting-item">
+                        <span class="setting-label">Paper Sheets Needed</span>
+                        <span class="setting-value" style="color: #667eea;">
+                          <%= sheets %>
+                        </span>
+                      </div>
+                      <% } %>
+                  </div>
+                </div>
+
+                <div class="button-group">
+                  <button type="submit" class="btn-primary">Submit to Printer</button>
+                  <a href="/upload" class="btn-secondary"
+                    style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Cancel</a>
+                </div>
+              </form>
     </div>
   </div>
 </body>
+
 </html>
