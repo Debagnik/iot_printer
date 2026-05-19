@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Print Queue - Print Queue Manager</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .queue-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .panel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .panel-card h2 {
+      font-size: 18px;
+      color: var(--text-color);
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 8px;
+    }
+
+    .no-jobs {
+      padding: 30px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .spool-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .spool-item {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .spool-details {
+      flex: 1;
+    }
+
+    .spool-title {
+      font-weight: 600;
+      color: var(--text-color);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .spool-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .spool-action {
+      margin-left: 15px;
+    }
+
+    .btn-cancel {
+      background: var(--error-bg);
+      color: var(--error-text);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .btn-cancel:hover {
+      opacity: 0.9;
+    }
+
+    .btn-cancel-all {
+      background: linear-gradient(135deg, var(--error-text) 0%, #842029 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn-cancel-all:hover {
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 900px) {
+      .queue-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <script>
+    function toggleTheme() {
+      const current = localStorage.getItem('theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    }
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Print Queue Manager</h1>
+      <div class="user-info">
+        <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
+        <a href="/admin" class="logout-btn" style="background: rgba(255, 255, 255, 0.1);">Admin Console</a>
+        <a href="/dashboard" class="logout-btn" style="background: rgba(255, 255, 255, 0.1);">Dashboard</a>
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <div>
+        <h2 style="color: var(--text-color); margin: 0;">Active Print Queue Console</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin-top: 5px;">Manage OS printer spool memory and current system jobs</p>
+      </div>
+      <div>
+        <form method="POST" action="/admin/print-queue/cancel-all" onsubmit="return confirm('Are you sure you want to cancel all queued and ongoing print jobs?');">
+          <button type="submit" class="btn-cancel-all">⚠️ Cancel All Active Jobs</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="queue-grid">
+      <!-- Section 1: OS Spooler Queue -->
+      <div class="panel-card">
+        <h2>OS Printer Spooler Queue</h2>
+        <% if (!spoolQueue || spoolQueue.length === 0) { %>
+          <div class="no-jobs">
+            <span style="font-size: 24px; display: block; margin-bottom: 10px;">📭</span>
+            No jobs currently residing in the printer's OS spool memory
+          </div>
+        <% } else { %>
+          <div class="spool-list">
+            <% spoolQueue.forEach(job => { %>
+              <div class="spool-item">
+                <div class="spool-details">
+                  <div class="spool-title"><%= job.document %></div>
+                  <div class="spool-meta">
+                    Job ID: <strong><%= job.jobId %></strong> &bull;
+                    User: <%= job.user %> &bull;
+                    Status: <span class="status-badge status-pending" style="padding: 2px 6px;"><%= job.status %></span> &bull;
+                    Size: <%= job.size %>
+                  </div>
+                </div>
+                <div class="spool-action">
+                  <form method="POST" action="/jobs/<%= job.jobId %>/cancel" style="display: inline;">
+                    <button type="submit" class="btn-cancel">Cancel Job</button>
+                  </form>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- Section 2: Active Server DB Jobs -->
+      <div class="panel-card">
+        <h2>Active Server Jobs (DB)</h2>
+        <% if (!activeJobs || activeJobs.length === 0) { %>
+          <div class="no-jobs">
+            <span style="font-size: 24px; display: block; margin-bottom: 10px;">💤</span>
+            No pending or active print jobs registered in the database
+          </div>
+        <% } else { %>
+          <div class="spool-list">
+            <% activeJobs.forEach(job => { %>
+              <div class="spool-item">
+                <div class="spool-details">
+                  <div class="spool-title"><%= job.documentName %></div>
+                  <div class="spool-meta">
+                    Job ID: <strong><%= job.id %></strong> &bull;
+                    User ID: <%= job.userId %> &bull;
+                    Status: <span class="status-badge status-<%= job.status %>" style="padding: 2px 6px;"><%= job.status %></span> &bull;
+                    Quality: <%= job.printQuality %> DPI &bull;
+                    Color: <%= job.colorMode %>
+                  </div>
+                </div>
+                <div class="spool-action">
+                  <form method="POST" action="/jobs/<%= job.id %>/cancel" style="display: inline;">
+                    <button type="submit" class="btn-cancel">Cancel Job</button>
+                  </form>
+                </div>
+              </div>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

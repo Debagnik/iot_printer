@@ -80,8 +80,12 @@ app.post('/scanner', requireAuth, scannerController.postScanDocument);
 app.get('/scanner/download/:fileName', requireAuth, scannerController.downloadScannedDocument);
 app.delete('/scanner/delete/:fileName', requireAuth, scannerController.deleteScannedDocument);
 
+app.post('/jobs/:id/cancel', requireAuth, jobController.cancelJob);
+
 // Admin routes
 app.get('/admin', requireAuth, requireAdmin, adminController.getAdminDashboard);
+app.get('/admin/print-queue', requireAuth, requireAdmin, adminController.getAdminPrintQueue);
+app.post('/admin/print-queue/cancel-all', requireAuth, requireAdmin, adminController.postCancelAllSpool);
 app.get('/api/admin/users', requireAuth, requireAdmin, adminController.getAllUsers);
 app.post('/api/admin/users', requireAuth, requireAdmin, adminController.createUser);
 app.delete('/api/admin/users/:userId', requireAuth, requireAdmin, adminController.deleteUser);

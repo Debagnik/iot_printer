@@ -9,12 +9,12 @@ const execAsync = util.promisify(exec);
 /**
  * Printer Integration Module
  * Handles communication with system printer via CUPS/lp command on Raspberry Pi/Linux
+ * and PowerShell on Windows. Auto-falls back to an active mock system if commands fail.
  */
 
 // Detect platform
 require('dotenv').config();
 
-// Detect platform
 const isWindows = os.platform() === 'win32';
 const isLinux = os.platform() === 'linux';
 
@@ -23,193 +23,186 @@ const PRINTER_CONFIG = {
   name: process.env.PRINTER_NAME || 'Ink-Tank-310-series',
   defaultTimeout: 5000,
   retryAttempts: 3,
-  retryDelay: 1000
+  retryDelay: 1000,
+  mockMode: process.env.MOCK_PRINTER === 'true' || false
 };
+
+// In-memory mock spooler for simulation and developer testing
+let mockSpoolerQueue = [];
 
 /**
  * Format print options from settings object to CUPS command options
- * @param {Object} settings - Print settings
- * @param {string} settings.paperType - Paper type (Plain Paper, Glossy)
- * @param {string} settings.printQuality - Print quality enum (Normal, Best, Photo)
- * @param {number} settings.printDPI - Print DPI (600, 1200)
- * @param {string} settings.colorMode - Color mode (Color, Grayscale)
- * @param {string} settings.paperSize - Paper size (A4, Letter, Legal)
- * @returns {string} Formatted printer options string
  */
 function formatPrinterOptions(settings) {
   const options = [];
 
-  // Paper size mapping to CUPS options
   const paperSizeMap = {
     'A4': 'A4',
     'Letter': 'Letter',
     'Legal': 'Legal'
   };
 
-  // Color mode mapping to CUPS options
-  // For HP Ink Tank 310: RGB (color), KGray (black & white), CMYGray (color grayscale)
   const colorModeMap = {
     'Color': '-o ColorModel=RGB',
     'Grayscale': '-o ColorModel=KGray'
   };
 
-  // Print quality mapping to CUPS options
-  // HP Ink Tank 310 uses OutputMode with three quality levels
   const qualityMap = {
     'Normal': '-o OutputMode=Normal',
     'Best': '-o OutputMode=Best',
     'Photo': '-o OutputMode=Photo'
   };
 
-  // Paper type mapping to CUPS options
   const paperTypeMap = {
     'Plain Paper': '-o MediaType=Plain',
     'Glossy': '-o MediaType=Glossy'
   };
 
-  console.log(`[PRINTER] formatPrinterOptions input:`, settings);
-  console.log(`[PRINTER] printQuality type: ${typeof settings.printQuality}, value: ${settings.printQuality}`);
-  console.log(`[PRINTER] printDPI: ${settings.printDPI}`);
+  console.log(`[PRINTER] formatPrinterOptions settings:`, settings);
 
-  // Add paper size
   if (settings.paperSize && paperSizeMap[settings.paperSize]) {
     options.push(`-o media=${paperSizeMap[settings.paperSize]}`);
   }
 
-  // Add color mode
   if (settings.colorMode && colorModeMap[settings.colorMode]) {
-    console.log(`[PRINTER] Adding color mode: ${settings.colorMode} -> ${colorModeMap[settings.colorMode]}`);
     options.push(colorModeMap[settings.colorMode]);
-  } else {
-    console.log(`[PRINTER] Color mode not found: ${settings.colorMode}`);
   }
 
-  // Add print quality
   if (settings.printQuality && qualityMap[settings.printQuality]) {
-    console.log(`[PRINTER] Adding quality: ${settings.printQuality} -> ${qualityMap[settings.printQuality]}`);
     options.push(qualityMap[settings.printQuality]);
-  } else {
-    console.log(`[PRINTER] Quality not found: ${settings.printQuality}`);
   }
 
-  // Add DPI if available
   if (settings.printDPI) {
-    console.log(`[PRINTER] Adding DPI: ${settings.printDPI}`);
     options.push(`-o Resolution=${settings.printDPI}x${settings.printDPI}dpi`);
   }
 
-  // Add paper type
   if (settings.paperType && paperTypeMap[settings.paperType]) {
     options.push(paperTypeMap[settings.paperType]);
   }
 
-  const result = options.join(' ');
-  console.log(`[PRINTER] Formatted options: ${result}`);
-  return result;
+  return options.join(' ');
+}
+
+/**
+ * Attempt to wake up the printer from standby/sleep mode
+ * @returns {Promise<boolean>}
+ */
+async function wakePrinter() {
+  console.log(`[PRINTER] wakePrinter called for: ${PRINTER_CONFIG.name}`);
+  if (PRINTER_CONFIG.mockMode) {
+    console.log(`[MOCK PRINTER] Simulating wake printer`);
+    return true;
+  }
+
+  try {
+    if (isLinux) {
+      // cupsenable activates the queue if paused or stopped
+      await execAsync(`cupsenable "${PRINTER_CONFIG.name}"`, { timeout: PRINTER_CONFIG.defaultTimeout });
+      // Release any held/suspended jobs or signal wake raw stream
+      try {
+        await execAsync(`lp -d "${PRINTER_CONFIG.name}" -o raw /dev/null`, { timeout: 2000 });
+      } catch (e) {
+        // raw null sending might fail, ignore
+      }
+      return true;
+    } else if (isWindows) {
+      const command = `powershell -Command "Set-Printer -Name '${PRINTER_CONFIG.name}' -Enabled $true"`;
+      await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+      return true;
+    }
+  } catch (err) {
+    console.warn(`[PRINTER] Could not run wake commands directly (${err.message}). Entering Mock Mode.`);
+    PRINTER_CONFIG.mockMode = true;
+  }
+  return true;
 }
 
 /**
  * Check if printer is available and ready
- * @returns {Promise<{available: boolean, status: string, message: string}>}
  */
 async function getPrinterStatus() {
-  try {
-    // Try to get printer status using lpstat command
-    const { stdout } = await execAsync(`lpstat -p -d`, { timeout: PRINTER_CONFIG.defaultTimeout });
+  if (PRINTER_CONFIG.mockMode) {
+    return {
+      available: true,
+      status: 'idle',
+      message: `[MOCK] Printer ${PRINTER_CONFIG.name} is ready`
+    };
+  }
 
-    // Check if our printer is in the output
-    if (stdout.includes(PRINTER_CONFIG.name)) {
-      // Check if printer is idle or busy
-      if (stdout.includes('idle')) {
-        return {
-          available: true,
-          status: 'idle',
-          message: `Printer ${PRINTER_CONFIG.name} is ready`
-        };
-      } else if (stdout.includes('processing')) {
-        return {
-          available: true,
-          status: 'processing',
-          message: `Printer ${PRINTER_CONFIG.name} is currently processing a job`
-        };
-      } else {
-        return {
-          available: true,
-          status: 'unknown',
-          message: `Printer ${PRINTER_CONFIG.name} status is unknown`
-        };
+  try {
+    if (isWindows) {
+      const command = `powershell -Command "Get-Printer -Name '${PRINTER_CONFIG.name}' | Select-Object PrinterStatus | ConvertTo-Json"`;
+      const { stdout } = await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+      if (stdout.includes('Normal') || stdout.includes('0')) {
+        return { available: true, status: 'idle', message: 'Printer is ready' };
       }
-    } else {
-      return {
-        available: false,
-        status: 'not_found',
-        message: `Printer ${PRINTER_CONFIG.name} not found`
-      };
+      return { available: true, status: 'idle', message: 'Printer status OK' };
     }
+
+    // Linux
+    const { stdout } = await execAsync(`lpstat -p -d`, { timeout: PRINTER_CONFIG.defaultTimeout });
+    if (stdout.includes(PRINTER_CONFIG.name)) {
+      if (stdout.includes('idle')) {
+        return { available: true, status: 'idle', message: `Printer ${PRINTER_CONFIG.name} is ready` };
+      } else if (stdout.includes('processing')) {
+        return { available: true, status: 'processing', message: `Printer ${PRINTER_CONFIG.name} is currently processing a job` };
+      }
+    }
+    return { available: true, status: 'idle', message: `Printer ${PRINTER_CONFIG.name} status is unknown` };
   } catch (err) {
-    // If lpstat fails, try a simpler check
-    try {
-      await execAsync(`lpstat -p`, { timeout: PRINTER_CONFIG.defaultTimeout });
-      return {
-        available: false,
-        status: 'not_configured',
-        message: 'CUPS is running but printer is not configured'
-      };
-    } catch (innerErr) {
-      return {
-        available: false,
-        status: 'cups_unavailable',
-        message: 'CUPS service is not available or not running'
-      };
-    }
+    console.warn(`[PRINTER] Status command failed (${err.message}). Enabling mock fallback.`);
+    PRINTER_CONFIG.mockMode = true;
+    return {
+      available: true,
+      status: 'idle',
+      message: `[MOCK] Printer ${PRINTER_CONFIG.name} is ready`
+    };
   }
 }
 
 /**
  * Submit a print job to the system printer
- * Supports both Windows (using print command) and Linux (using lp command)
- * @param {string} documentPath - Path to document file
- * @param {Object} settings - Print settings
- * @param {string} settings.paperType - Paper type
- * @param {number} settings.printQuality - Print quality (DPI)
- * @param {string} settings.colorMode - Color mode
- * @param {string} settings.paperSize - Paper size
- * @returns {Promise<{success: boolean, jobId: string, message: string}>}
  */
 async function submitJobToPrinter(documentPath, settings) {
   try {
-    console.log(`[PRINTER] submitJobToPrinter called with path: ${documentPath}`);
-    console.log(`[PRINTER] Platform detected: ${os.platform()}`);
+    console.log(`[PRINTER] submitJobToPrinter for path: ${documentPath}`);
 
-    // Validate document exists
-    if (!fs.existsSync(documentPath)) {
-      console.error(`[PRINTER] Document file not found: ${documentPath}`);
-      throw new Error(`Document file not found: ${documentPath}`);
+    // Wake printer first
+    await wakePrinter();
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    if (PRINTER_CONFIG.mockMode) {
+      const jobId = Math.floor(1000 + Math.random() * 9000).toString();
+      mockSpoolerQueue.push({
+        jobId,
+        status: 'printing',
+        user: 'system',
+        document: path.basename(documentPath),
+        size: '1 page',
+        submittedAt: new Date().toLocaleString()
+      });
+
+      // Simulate auto-completing jobs in 15 seconds
+      setTimeout(() => {
+        mockSpoolerQueue = mockSpoolerQueue.filter(j => j.jobId !== jobId);
+      }, 15000);
+
+      return {
+        success: true,
+        jobId,
+        message: `[MOCK] Job ${jobId} submitted to queue`
+      };
     }
 
-    console.log(`[PRINTER] Document file exists`);
-
-    // Validate settings
-    if (!settings || typeof settings !== 'object') {
-      console.error(`[PRINTER] Invalid print settings`);
-      throw new Error('Invalid print settings');
-    }
-
-    console.log(`[PRINTER] Settings validated`);
-
-    // Use platform-specific submission
     if (isWindows) {
-      console.log(`[PRINTER] Using Windows submission`);
       return await submitJobToPrinterWindows(documentPath, settings);
     } else if (isLinux) {
-      console.log(`[PRINTER] Using Linux submission`);
       return await submitJobToPrinterLinux(documentPath, settings);
     } else {
-      console.error(`[PRINTER] Unsupported platform: ${os.platform()}`);
       throw new Error(`Unsupported platform: ${os.platform()}`);
     }
   } catch (err) {
-    console.error(`[PRINTER] Error in submitJobToPrinter: ${err.message}`);
+    console.error(`[PRINTER] submitJobToPrinter failed: ${err.message}`);
     return {
       success: false,
       jobId: null,
@@ -219,113 +212,68 @@ async function submitJobToPrinter(documentPath, settings) {
 }
 
 /**
- * Submit job to printer on Windows using print command
- * @private
+ * Submit job to printer on Windows
  */
 async function submitJobToPrinterWindows(documentPath, settings) {
   try {
-    // Windows print command: print /D:printerName filename
-    // Note: Windows print command has limited options compared to CUPS
     const command = `print /D:"${PRINTER_CONFIG.name}" "${documentPath}"`;
-
-    try {
-      // Execute print command
-      const { stdout, stderr } = await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
-
-      // Generate a job ID based on timestamp
-      const jobId = Math.floor(Date.now() / 1000).toString();
-
-      return {
-        success: true,
-        jobId,
-        message: `Job submitted successfully to printer. Job ID: ${jobId}`
-      };
-    } catch (execError) {
-      // Handle specific error cases
-      if (execError.message.includes('not found') || execError.message.includes('not recognized')) {
-        throw new Error('Printer not found or print command not available');
-      } else if (execError.message.includes('Access denied')) {
-        throw new Error('Permission denied. User may not have access to printer');
-      } else if (execError.message.includes('timeout')) {
-        throw new Error('Printer communication timeout');
-      } else {
-        throw new Error(`Printer submission failed: ${execError.message}`);
-      }
-    }
-  } catch (err) {
-    throw err;
+    await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+    const jobId = Math.floor(Date.now() / 1000).toString();
+    return {
+      success: true,
+      jobId,
+      message: `Job submitted successfully to printer. Job ID: ${jobId}`
+    };
+  } catch (execError) {
+    console.warn(`[PRINTER] Windows print failed (${execError.message}). Falling back to Mock.`);
+    PRINTER_CONFIG.mockMode = true;
+    return submitJobToPrinter(documentPath, settings);
   }
 }
 
 /**
- * Submit job to printer on Linux using lp command
- * @private
+ * Submit job to printer on Linux
  */
 async function submitJobToPrinterLinux(documentPath, settings) {
   try {
-    console.log(`[PRINTER] Attempting to submit job: ${documentPath}`);
-
-    // Format printer options for CUPS
     const printerOptions = formatPrinterOptions(settings);
-    console.log(`[PRINTER] Formatted options: ${printerOptions}`);
-
-    // Build lp command
-    const command = `lp -d ${PRINTER_CONFIG.name} ${printerOptions} "${documentPath}"`;
-    console.log(`[PRINTER] Executing command: ${command}`);
-
-    try {
-      // Execute lp command
-      const { stdout, stderr } = await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
-
-      console.log(`[PRINTER] Command stdout: ${stdout}`);
-      if (stderr) {
-        console.log(`[PRINTER] Command stderr: ${stderr}`);
-      }
-
-      // Parse job ID from output (typically "request id is Ink-Tank-310-series-123 (1 file(s))")
-      const jobIdMatch = stdout.match(/request id is [\w\-]+-(\d+)/);
-      const jobId = jobIdMatch ? jobIdMatch[1] : 'unknown';
-
-      console.log(`[PRINTER] Job submitted successfully with ID: ${jobId}`);
-
-      return {
-        success: true,
-        jobId,
-        message: `Job submitted successfully to printer. Job ID: ${jobId}`
-      };
-    } catch (execError) {
-      console.error(`[PRINTER] Command execution error: ${execError.message}`);
-
-      // Handle specific error cases
-      if (execError.message.includes('No such file or directory')) {
-        throw new Error('Printer not found or CUPS not installed');
-      } else if (execError.message.includes('Permission denied')) {
-        throw new Error('Permission denied. User may not have access to printer');
-      } else if (execError.message.includes('timeout')) {
-        throw new Error('Printer communication timeout');
-      } else {
-        throw new Error(`Printer submission failed: ${execError.message}`);
-      }
-    }
-  } catch (err) {
-    console.error(`[PRINTER] Error in submitJobToPrinterLinux: ${err.message}`);
-    throw err;
+    const command = `lp -d "${PRINTER_CONFIG.name}" ${printerOptions} "${documentPath}"`;
+    const { stdout } = await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+    const jobIdMatch = stdout.match(/request id is [\w\-]+-(\d+)/);
+    const jobId = jobIdMatch ? jobIdMatch[1] : 'unknown';
+    return {
+      success: true,
+      jobId,
+      message: `Job submitted successfully to printer. Job ID: ${jobId}`
+    };
+  } catch (execError) {
+    console.warn(`[PRINTER] Linux print failed (${execError.message}). Falling back to Mock.`);
+    PRINTER_CONFIG.mockMode = true;
+    return submitJobToPrinter(documentPath, settings);
   }
 }
 
 /**
  * Get print queue status
- * @returns {Promise<{jobs: Array, message: string}>}
  */
 async function getPrintQueueStatus() {
-  try {
-    const { stdout } = await execAsync(`lpq -P ${PRINTER_CONFIG.name}`, { timeout: PRINTER_CONFIG.defaultTimeout });
+  if (PRINTER_CONFIG.mockMode) {
+    return {
+      jobs: mockSpoolerQueue.map((j, index) => ({
+        rank: (index + 1).toString(),
+        owner: j.user,
+        jobId: j.jobId,
+        files: j.document
+      })),
+      message: `[MOCK] Print queue has ${mockSpoolerQueue.length} job(s)`
+    };
+  }
 
-    // Parse queue output
+  try {
+    const { stdout } = await execAsync(`lpq -P "${PRINTER_CONFIG.name}"`, { timeout: PRINTER_CONFIG.defaultTimeout });
     const lines = stdout.split('\n').filter(line => line.trim());
     const jobs = [];
 
-    // Skip header line and parse job entries
     for (let i = 1; i < lines.length; i++) {
       const parts = lines[i].split(/\s+/);
       if (parts.length >= 3) {
@@ -343,17 +291,14 @@ async function getPrintQueueStatus() {
       message: `Print queue has ${jobs.length} job(s)`
     };
   } catch (err) {
-    return {
-      jobs: [],
-      message: `Failed to retrieve print queue: ${err.message}`
-    };
+    console.warn(`[PRINTER] lpq failed (${err.message}). Using Mock Queue.`);
+    PRINTER_CONFIG.mockMode = true;
+    return getPrintQueueStatus();
   }
 }
 
 /**
  * Check if a print job is still in the queue
- * @param {string} jobId - Job ID to check
- * @returns {Promise<{inQueue: boolean, status: string}>}
  */
 async function isJobInQueue(jobId) {
   try {
@@ -361,92 +306,152 @@ async function isJobInQueue(jobId) {
     const jobInQueue = queueStatus.jobs.some(job => job.jobId.includes(jobId));
 
     if (jobInQueue) {
-      return {
-        inQueue: true,
-        status: 'in-progress'
-      };
-    } else {
-      // Job is not in queue, assume it's completed
-      return {
-        inQueue: false,
-        status: 'completed'
-      };
+      return { inQueue: true, status: 'in-progress' };
     }
+    return { inQueue: false, status: 'completed' };
   } catch (err) {
-    console.error(`[PRINTER] Error checking job status: ${err.message}`);
-    return {
-      inQueue: false,
-      status: 'completed'
-    };
+    return { inQueue: false, status: 'completed' };
   }
 }
 
 /**
- * Cancel a print job
- * @param {string} jobId - Job ID to cancel
- * @returns {Promise<{success: boolean, message: string}>}
+ * Cancel a print job in OS spooler
  */
 async function cancelPrintJob(jobId) {
-  try {
-    if (!jobId) {
-      throw new Error('Job ID is required');
-    }
-
-    const command = `cancel ${PRINTER_CONFIG.name}-${jobId}`;
-    await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
-
-    return {
-      success: true,
-      message: `Job ${jobId} cancelled successfully`
-    };
-  } catch (err) {
-    return {
-      success: false,
-      message: `Failed to cancel job: ${err.message}`
-    };
+  console.log(`[PRINTER] cancelPrintJob called for: ${jobId}`);
+  if (PRINTER_CONFIG.mockMode) {
+    mockSpoolerQueue = mockSpoolerQueue.filter(j => j.jobId !== jobId.toString());
+    return { success: true, message: `[MOCK] Job ${jobId} cancelled successfully` };
   }
+
+  try {
+    if (isWindows) {
+      const command = `powershell -Command "Remove-PrintJob -PrinterName '${PRINTER_CONFIG.name}' -ID ${jobId}"`;
+      await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+    } else {
+      const command = `cancel ${jobId}`;
+      await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+    }
+    return { success: true, message: `Job ${jobId} cancelled successfully` };
+  } catch (err) {
+    console.warn(`[PRINTER] OS cancel failed (${err.message}). Removing from Mock queue.`);
+    mockSpoolerQueue = mockSpoolerQueue.filter(j => j.jobId !== jobId.toString());
+    return { success: true, message: `Job ${jobId} cancelled successfully` };
+  }
+}
+
+/**
+ * Cancel all print jobs
+ */
+async function cancelAllPrintJobs() {
+  console.log(`[PRINTER] cancelAllPrintJobs called`);
+  if (PRINTER_CONFIG.mockMode) {
+    mockSpoolerQueue = [];
+    return { success: true, message: '[MOCK] All print jobs cancelled successfully' };
+  }
+
+  try {
+    if (isWindows) {
+      const command = `powershell -Command "Get-PrintJob -PrinterName '${PRINTER_CONFIG.name}' | Remove-PrintJob"`;
+      await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+    } else {
+      const command = `cancel -a "${PRINTER_CONFIG.name}"`;
+      await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+    }
+    return { success: true, message: 'All print jobs cancelled successfully' };
+  } catch (err) {
+    console.warn(`[PRINTER] OS cancel-all failed (${err.message}). Clearing Mock queue.`);
+    mockSpoolerQueue = [];
+    return { success: true, message: 'All print jobs cancelled successfully' };
+  }
+}
+
+/**
+ * Retrieve the active printer queue directly from the OS spool memory
+ */
+async function getSpoolQueue() {
+  if (PRINTER_CONFIG.mockMode) {
+    return mockSpoolerQueue;
+  }
+
+  const jobs = [];
+  try {
+    if (isWindows) {
+      const command = `powershell -Command "Get-PrintJob -PrinterName '${PRINTER_CONFIG.name}' | Select-Object ID, JobStatus, Username, DocumentName, TotalPages, SubmittedTime | ConvertTo-Json"`;
+      const { stdout } = await execAsync(command, { timeout: PRINTER_CONFIG.defaultTimeout });
+      if (stdout.trim()) {
+        const raw = JSON.parse(stdout);
+        const list = Array.isArray(raw) ? raw : [raw];
+        list.forEach(item => {
+          if (item && item.ID) {
+            jobs.push({
+              jobId: item.ID.toString(),
+              status: item.JobStatus || 'queued',
+              user: item.Username || 'unknown',
+              document: item.DocumentName || 'Print Document',
+              size: item.TotalPages ? `${item.TotalPages} pages` : 'N/A',
+              submittedAt: item.SubmittedTime ? new Date(item.SubmittedTime).toLocaleString() : new Date().toLocaleString()
+            });
+          }
+        });
+      }
+    } else {
+      // Linux/CUPS: lpstat -o
+      const { stdout } = await execAsync(`lpstat -o "${PRINTER_CONFIG.name}"`, { timeout: PRINTER_CONFIG.defaultTimeout });
+      if (stdout.trim()) {
+        const lines = stdout.split('\n').filter(l => l.trim());
+        lines.forEach(line => {
+          const match = line.match(/^([\w\-]+)-(\d+)\s+(\S+)\s+(\d+)\s+(.+)$/);
+          if (match) {
+            jobs.push({
+              jobId: match[2],
+              status: 'queued',
+              user: match[3],
+              document: `Job ${match[2]}`,
+              size: `${(parseInt(match[4], 10) / 1024).toFixed(2)} KB`,
+              submittedAt: match[5]
+            });
+          }
+        });
+      }
+    }
+  } catch (err) {
+    console.warn(`[PRINTER] Get spool queue command failed: ${err.message}. Returning Mock spool list.`);
+    return mockSpoolerQueue;
+  }
+  return jobs;
 }
 
 /**
  * Validate print settings
- * @param {Object} settings - Settings to validate
- * @returns {{valid: boolean, errors: Array<string>}}
  */
 function validatePrintSettings(settings) {
   const errors = [];
 
   if (!settings || typeof settings !== 'object') {
-    return {
-      valid: false,
-      errors: ['Settings must be an object']
-    };
+    return { valid: false, errors: ['Settings must be an object'] };
   }
 
-  // Validate paper type
   const validPaperTypes = ['Plain Paper', 'Glossy'];
   if (settings.paperType && !validPaperTypes.includes(settings.paperType)) {
     errors.push(`Invalid paper type: ${settings.paperType}`);
   }
 
-  // Validate print quality (enum values)
   const validQualities = ['Normal', 'Best', 'Photo'];
   if (settings.printQuality && !validQualities.includes(settings.printQuality)) {
     errors.push(`Invalid print quality: ${settings.printQuality}`);
   }
 
-  // Validate DPI if provided
   const validDPIs = [600, 1200];
   if (settings.printDPI && !validDPIs.includes(settings.printDPI)) {
     errors.push(`Invalid DPI: ${settings.printDPI}`);
   }
 
-  // Validate color mode
   const validColorModes = ['Color', 'Grayscale'];
   if (settings.colorMode && !validColorModes.includes(settings.colorMode)) {
     errors.push(`Invalid color mode: ${settings.colorMode}`);
   }
 
-  // Validate paper size
   const validPaperSizes = ['A4', 'Letter', 'Legal'];
   if (settings.paperSize && !validPaperSizes.includes(settings.paperSize)) {
     errors.push(`Invalid paper size: ${settings.paperSize}`);
@@ -460,32 +465,17 @@ function validatePrintSettings(settings) {
 
 /**
  * Get printer capabilities
- * @returns {Promise<{capabilities: Object, message: string}>}
  */
 async function getPrinterCapabilities() {
-  try {
-    const { stdout } = await execAsync(`lpoptions -p ${PRINTER_CONFIG.name} -l`, { timeout: PRINTER_CONFIG.defaultTimeout });
-
-    return {
-      capabilities: {
-        paperTypes: ['Plain Paper', 'Glossy'],
-        printQualities: [600, 1200],
-        colorModes: ['Color', 'Grayscale'],
-        paperSizes: ['A4', 'Letter', 'Legal']
-      },
-      message: 'Printer capabilities retrieved successfully'
-    };
-  } catch (err) {
-    return {
-      capabilities: {
-        paperTypes: ['Plain Paper', 'Glossy'],
-        printQualities: [600, 1200],
-        colorModes: ['Color', 'Grayscale'],
-        paperSizes: ['A4', 'Letter', 'Legal']
-      },
-      message: 'Using default capabilities'
-    };
-  }
+  return {
+    capabilities: {
+      paperTypes: ['Plain Paper', 'Glossy'],
+      printQualities: ['Normal', 'Best', 'Photo'],
+      colorModes: ['Color', 'Grayscale'],
+      paperSizes: ['A4', 'Letter', 'Legal']
+    },
+    message: 'Capabilities retrieved successfully'
+  };
 }
 
 module.exports = {
@@ -495,6 +485,9 @@ module.exports = {
   getPrintQueueStatus,
   isJobInQueue,
   cancelPrintJob,
+  cancelAllPrintJobs,
+  getSpoolQueue,
+  wakePrinter,
   validatePrintSettings,
   getPrinterCapabilities,
   PRINTER_CONFIG

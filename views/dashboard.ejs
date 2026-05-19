@@ -1,64 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - Print Queue Manager</title>
   <link rel="stylesheet" href="/style.css">
   <script>
-    // Theme toggle logic
     function toggleTheme() {
       const current = localStorage.getItem('theme') || 'light';
       const next = current === 'light' ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
     }
-
-    // Init theme
     const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   </script>
 </head>
-
 <body>
   <header>
     <div class="header-content">
       <h1>Print Queue Manager</h1>
       <div class="user-info">
-        <button class="theme-toggle" onclick="toggleTheme()"
-          style="background:none; border:1px solid currentColor; padding: 4px 10px;">Theme</button>
+        <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
         <span>Welcome, <%= username %></span>
-        <% if (typeof role !=='undefined' && role==='ADMIN' ) { %>
-          <a href="/admin" style="color: white; text-decoration: none; margin-right: 10px; font-weight: bold;">Admin
-            Panel</a>
-          <% } %>
-            <a href="/logout" class="logout-btn">Logout</a>
+        <% if (typeof role !== 'undefined' && role === 'ADMIN') { %>
+          <a href="/admin/print-queue" style="color: white; text-decoration: none; margin-right: 15px; font-weight: bold;">Active Queue Console</a>
+          <a href="/admin" style="color: white; text-decoration: none; margin-right: 15px; font-weight: bold;">Admin Panel</a>
+        <% } %>
+        <a href="/logout" class="logout-btn">Logout</a>
       </div>
     </div>
   </header>
 
-  <div class="container">
+  <div class="container" style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
     <div class="welcome-message card">
       <h2>Dashboard</h2>
       <p>Welcome to the Print Queue Manager.</p>
     </div>
 
-    <div class="actions" style="margin-bottom: 30px;">
-      <a href="/upload" class="action-btn"
-        style="display:inline-block; padding:12px 24px; background:var(--primary-color); color:white; border-radius:4px; text-decoration:none;">Upload
-        Document</a>
-      <a href="/scanner" class="action-btn"
-        style="display:inline-block; padding:12px 24px; background:var(--primary-color); color:white; border-radius:4px; text-decoration:none; margin-left: 10px;">Scan
-        Document</a>
-      <button type="button" class="action-btn" style="margin-left: 10px;" onclick="runCleanup()">Clean Up
-        Storage</button>
+    <div class="actions" style="margin-bottom: 30px; display: flex; gap: 10px; flex-wrap: wrap;">
+      <a href="/upload" class="action-btn" style="display:inline-block; padding:12px 24px; background:var(--primary-color); color:white; border-radius:4px; text-decoration:none; font-weight:600;">Upload Document</a>
+      <a href="/scanner" class="action-btn" style="display:inline-block; padding:12px 24px; background:var(--primary-color); color:white; border-radius:4px; text-decoration:none; margin-left: 0; font-weight:600;">Scan Document</a>
+      <button type="button" class="action-btn" onclick="runCleanup()">Clean Up Storage</button>
     </div>
 
     <div class="job-history card">
       <h3>Print Job History</h3>
-      <% if (jobs && jobs.length> 0) { %>
-        <table class="jobs-table">
+      <% if (jobs && jobs.length > 0) { %>
+        <table class="jobs-table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
           <thead>
             <tr>
               <th>Job ID</th>
@@ -69,45 +58,40 @@
               <th>Quality</th>
               <th>Color Mode</th>
               <th>Paper Size</th>
+              <th style="text-align: center;">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <% jobs.forEach(job=> { %>
+            <% jobs.forEach(job => { %>
               <tr class="job-row status-<%= job.status %>">
-                <td>
-                  <%= job.id %>
-                </td>
-                <td>
-                  <%= job.documentName %>
-                </td>
-                <td>
-                  <%= new Date(job.submittedAt).toLocaleString() %>
-                </td>
+                <td><%= job.id %></td>
+                <td style="font-weight: 500;"><%= job.documentName %></td>
+                <td><%= new Date(job.submittedAt).toLocaleString() %></td>
                 <td>
                   <span class="status-badge status-<%= job.status %>">
                     <%= job.status.charAt(0).toUpperCase() + job.status.slice(1) %>
                   </span>
                 </td>
-                <td>
-                  <%= job.paperType %>
-                </td>
-                <td>
-                  <%= job.printQuality %>
-                </td>
-                <td>
-                  <%= job.colorMode %>
-                </td>
-                <td>
-                  <%= job.paperSize %>
+                <td><%= job.paperType %></td>
+                <td><%= job.printQuality %></td>
+                <td><%= job.colorMode %></td>
+                <td><%= job.paperSize %></td>
+                <td style="text-align: center;">
+                  <% if (job.status === 'pending' || job.status === 'in-progress') { %>
+                    <form method="POST" action="/jobs/<%= job.id %>/cancel" style="display: inline;" onsubmit="return confirm('Are you sure you want to cancel this print job?');">
+                      <button type="submit" class="btn-cancel" style="background: var(--error-bg); color: var(--error-text); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer; font-weight: 600;">Cancel</button>
+                    </form>
+                  <% } else { %>
+                    <span style="color: var(--text-muted); font-size: 12px;">--</span>
+                  <% } %>
                 </td>
               </tr>
-              <% }); %>
+            <% }); %>
           </tbody>
         </table>
-        <% } else { %>
-          <p class="no-jobs" style="text-align:center; padding:20px;">No print jobs yet. <a href="/upload">Upload a
-              document</a> to get started.</p>
-          <% } %>
+      <% } else { %>
+        <p class="no-jobs" style="text-align:center; padding:30px; color: var(--text-muted);">No print jobs yet. <a href="/upload" style="color: var(--primary-color); font-weight: 600;">Upload a document</a> to get started.</p>
+      <% } %>
     </div>
   </div>
 
@@ -117,23 +101,15 @@
       const jobRows = document.querySelectorAll('.job-row');
 
       jobRows.forEach(row => {
-        const jobId = row.querySelector('td').textContent;
+        const jobId = row.querySelector('td').textContent.trim();
         const statusCell = row.querySelector('.status-badge');
 
-        // Only check jobs that are in-progress
-        if (statusCell.classList.contains('status-in-progress')) {
+        if (statusCell && statusCell.classList.contains('status-in-progress')) {
           fetch(`/api/job/${jobId}/status`)
             .then(response => response.json())
             .then(data => {
-              if (data.updated) {
-                // Update the status badge
-                statusCell.classList.remove('status-in-progress');
-                statusCell.classList.add(`status-${data.status}`);
-                statusCell.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-
-                // Update the row class
-                row.classList.remove('status-in-progress');
-                row.classList.add(`status-${data.status}`);
+              if (data && data.updated) {
+                location.reload();
               }
             })
             .catch(err => console.error('Error updating job status:', err));
@@ -172,5 +148,4 @@
     setInterval(updateJobStatuses, 5000);
   </script>
 </body>
-
 </html>

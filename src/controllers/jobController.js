@@ -336,6 +336,42 @@ async function postConfirmFlip(req, res) {
   }
 }
 
+/**
+ * Cancel a user print job
+ */
+async function cancelJob(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id || isNaN(id)) {
+      return res.status(400).render('error', { error: 'Invalid job ID' });
+    }
+
+    const job = await PrintJob.getPrintJob(parseInt(id, 10));
+    if (!job) {
+      return res.status(404).render('error', { error: 'Job not found' });
+    }
+
+    // Verify user owns the job or is admin
+    if (job.userId !== req.session.userId && req.session.role !== 'admin') {
+      return res.status(403).render('error', { error: 'Access denied' });
+    }
+
+    // Only cancel if job is pending or in-progress
+    if (job.status === 'pending' || job.status === 'in-progress') {
+      const printerIntegration = require('../utils/printerIntegration');
+      // Cancel in system/OS spooler
+      await printerIntegration.cancelPrintJob(job.id);
+      // Update in database to cancelled
+      await PrintJob.updateJobStatus(job.id, 'cancelled');
+    }
+
+    res.redirect('/dashboard');
+  } catch (err) {
+    console.error('Cancel job error:', err);
+    res.status(500).render('error', { error: `Failed to cancel job: ${err.message}` });
+  }
+}
+
 module.exports = {
   getSubmitJob,
   postSubmitJob,
@@ -343,5 +379,6 @@ module.exports = {
   getJobDetails,
   getDashboard,
   updateJobStatus,
+  cancelJob,
   manualCleanup
 };

@@ -319,6 +319,61 @@ async function setRegistrationStatus(req, res) {
   }
 }
 
+/**
+ * Get OS Spool Queue and Active DB jobs
+ */
+async function getAdminPrintQueue(req, res) {
+  try {
+    const printerIntegration = require('../utils/printerIntegration');
+    
+    // Fetch live OS spool queue
+    const spoolQueue = await printerIntegration.getSpoolQueue();
+
+    // Fetch active database print jobs (pending and in-progress)
+    const activeJobs = await db.getAllPrintJobs();
+    const filteredActiveJobs = activeJobs.filter(
+      job => job.status === 'pending' || job.status === 'in-progress'
+    );
+
+    res.render('admin-print-queue', {
+      username: req.session.username,
+      spoolQueue: spoolQueue || [],
+      activeJobs: filteredActiveJobs || [],
+      error: null,
+      success: null
+    });
+  } catch (err) {
+    console.error('Admin print queue error:', err);
+    res.status(500).render('error', { error: 'Failed to load admin print queue panel' });
+  }
+}
+
+/**
+ * Cancel all active print jobs (spooler + db)
+ */
+async function postCancelAllSpool(req, res) {
+  try {
+    const printerIntegration = require('../utils/printerIntegration');
+
+    // 1. Cancel all spooler jobs
+    await printerIntegration.cancelAllPrintJobs();
+
+    // 2. Update all active db jobs to cancelled
+    const activeJobs = await db.getAllPrintJobs();
+    for (const job of activeJobs) {
+      if (job.status === 'pending' || job.status === 'in-progress') {
+        const PrintJob = require('../models/printJob');
+        await PrintJob.updateJobStatus(job.id, 'cancelled');
+      }
+    }
+
+    res.redirect('/admin/print-queue');
+  } catch (err) {
+    console.error('Cancel all spool error:', err);
+    res.status(500).render('error', { error: `Failed to cancel all print jobs: ${err.message}` });
+  }
+}
+
 module.exports = {
   getAdminDashboard,
   getAllUsers,
@@ -333,5 +388,7 @@ module.exports = {
   getRegistrationStatus,
   setRegistrationStatus,
   getAllScanJobs,
-  deleteScanJob
+  deleteScanJob,
+  getAdminPrintQueue,
+  postCancelAllSpool
 };

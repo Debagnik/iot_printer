@@ -4,102 +4,50 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Job Confirmation - Print Queue Manager</title>
+  <link rel="stylesheet" href="/style.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #f5f5f5;
-      min-height: 100vh;
-    }
-
-    header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    h1 {
-      font-size: 24px;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .logout-btn {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
-
-    .logout-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
     .confirmation-card {
-      background: white;
+      background: var(--card-bg);
       padding: 30px;
       border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--border-color);
       text-align: center;
+      transition: background 0.3s, border-color 0.3s;
     }
 
     .success-icon {
       font-size: 48px;
-      color: #4caf50;
+      color: var(--success-text);
       margin-bottom: 20px;
     }
 
     .confirmation-card h2 {
-      color: #333;
+      color: var(--text-color);
       margin-bottom: 10px;
       font-size: 24px;
     }
 
     .confirmation-card p {
-      color: #666;
+      color: var(--text-muted);
       margin-bottom: 30px;
       font-size: 16px;
     }
 
     .job-id-box {
-      background: #f9f9f9;
+      background: var(--bg-color);
       padding: 20px;
       border-radius: 4px;
       margin-bottom: 30px;
-      border-left: 4px solid #667eea;
+      border-left: 4px solid var(--primary-color);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--primary-color);
+      transition: background 0.3s, border-color 0.3s;
     }
 
     .job-id-label {
       font-size: 12px;
-      color: #999;
+      color: var(--text-muted);
       text-transform: uppercase;
       margin-bottom: 8px;
     }
@@ -107,20 +55,22 @@
     .job-id {
       font-size: 32px;
       font-weight: 700;
-      color: #667eea;
+      color: var(--primary-color);
       font-family: 'Courier New', monospace;
     }
 
     .details-section {
       text-align: left;
-      background: #f9f9f9;
+      background: var(--bg-color);
       padding: 20px;
       border-radius: 4px;
       margin-bottom: 30px;
+      border: 1px solid var(--border-color);
+      transition: background 0.3s, border-color 0.3s;
     }
 
     .details-section h3 {
-      color: #333;
+      color: var(--text-color);
       margin-bottom: 15px;
       font-size: 16px;
     }
@@ -129,7 +79,7 @@
       display: flex;
       justify-content: space-between;
       padding: 8px 0;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--border-color);
     }
 
     .detail-row:last-child {
@@ -138,11 +88,11 @@
 
     .detail-label {
       font-weight: 600;
-      color: #333;
+      color: var(--text-color);
     }
 
     .detail-value {
-      color: #666;
+      color: var(--text-muted);
     }
 
     .alert {
@@ -150,18 +100,18 @@
       border-radius: 4px;
       margin-bottom: 20px;
       font-size: 14px;
+      border: 1px solid var(--border-color);
     }
 
     .alert-info {
-      background: #e3f2fd;
-      color: #1976d2;
-      border: 1px solid #bbdefb;
+      background: var(--info-bg);
+      color: var(--info-text);
+      border-color: var(--info-border);
     }
 
     .alert-warning {
-      background: #fff3e0;
-      color: #f57c00;
-      border: 1px solid #ffe0b2;
+      background: var(--warning-bg);
+      color: var(--warning-text);
     }
 
     .button-group {
@@ -170,37 +120,21 @@
       margin-top: 30px;
     }
 
-    a {
+    .button-group a {
       flex: 1;
       padding: 12px 20px;
-      border: none;
       border-radius: 4px;
       font-size: 14px;
       font-weight: 600;
-      cursor: pointer;
       text-decoration: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.3s;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      opacity: 0.9;
-    }
-
-    .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
-    }
-
-    .btn-secondary:hover {
-      background: #e0e0e0;
+    .button-group a:hover {
+      transform: translateY(-1px);
     }
 
     @media (max-width: 600px) {
@@ -213,19 +147,30 @@
       }
     }
   </style>
+  <script>
+    function toggleTheme() {
+      const current = localStorage.getItem('theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    }
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 <body>
   <header>
     <div class="header-content">
       <h1>Print Queue Manager</h1>
       <div class="user-info">
+        <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
         <span>Job Confirmation</span>
         <a href="/logout" class="logout-btn">Logout</a>
       </div>
     </div>
   </header>
 
-  <div class="container">
+  <div class="container" style="max-width: 800px; margin: 30px auto; padding: 0 20px;">
     <div class="confirmation-card">
       <div class="success-icon">✓</div>
       <h2>Print Job Submitted</h2>

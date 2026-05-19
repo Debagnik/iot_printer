@@ -2,6 +2,7 @@
   --primary-color: #667eea;
   --secondary-color: #764ba2;
   --text-color: #333;
+  --text-muted: #666;
   --bg-color: #f5f5f5;
   --card-bg: white;
   --border-color: #ddd;
@@ -9,6 +10,11 @@
   --success-text: #0f5132;
   --error-bg: #f8d7da;
   --error-text: #842029;
+  --warning-bg: #fff3cd;
+  --warning-text: #664d03;
+  --info-bg: #e3f2fd;
+  --info-text: #1976d2;
+  --info-border: #bbdefb;
   --header-text: white;
   --input-bg: white;
 }
@@ -17,15 +23,21 @@
   --primary-color: #7f9cf5;
   --secondary-color: #8b5cf6;
   --text-color: #e5e5e5;
-  --bg-color: #1a1a1a;
-  --card-bg: #2d2d2d;
-  --border-color: #444;
-  --success-bg: #055160;
-  --success-text: #a3cfbb;
-  --error-bg: #842029;
-  --error-text: #f8d7da;
+  --text-muted: #aaa;
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --border-color: #333;
+  --success-bg: #0f3d2a;
+  --success-text: #75b798;
+  --error-bg: #5c191e;
+  --error-text: #ea868f;
+  --warning-bg: #4d3800;
+  --warning-text: #ffda6a;
+  --info-bg: #0d3c61;
+  --info-text: #9ec5fe;
+  --info-border: #0a2d4a;
   --header-text: #e5e5e5;
-  --input-bg: #333;
+  --input-bg: #2d2d2d;
 }
 
 * {
@@ -181,18 +193,23 @@ tr:hover {
 }
 
 .status-completed, .status-enabled {
-    background: #d1e7dd;
-    color: #0f5132;
+    background: var(--success-bg);
+    color: var(--success-text);
 }
 
 .status-pending, .status-processing, .status-in-progress {
-    background: #fff3cd;
-    color: #664d03;
+    background: var(--warning-bg);
+    color: var(--warning-text);
 }
 
 .status-failed, .status-error, .status-disabled {
-    background: #f8d7da;
-    color: #842029;
+    background: var(--error-bg);
+    color: var(--error-text);
+}
+
+.status-cancelled {
+    background: var(--border-color);
+    color: var(--text-muted);
 }
 
 /* Dark Mode Toggle */
@@ -276,3 +293,308 @@ label {
     display: block;
     margin-bottom: 5px;
 }
+
+/* ==========================================
+   Configure & Double-Sided Toggle Styles
+   ========================================== */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    margin-bottom: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--border-color);
+    border-radius: 28px;
+    transition: 0.3s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+
+.toggle-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.paper-estimate {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: linear-gradient(135deg, var(--info-bg) 0%, var(--card-bg) 100%);
+    padding: 18px 20px;
+    border-radius: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--primary-color);
+    border: 1px solid var(--info-border);
+    border-left: 4px solid var(--primary-color);
+}
+
+.estimate-icon {
+    font-size: 32px;
+}
+
+.estimate-details {
+    flex: 1;
+}
+
+.estimate-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.estimate-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.estimate-breakdown {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ==========================================
+   Flip Pages Screen & Flip Animation Styles
+   ========================================== */
+.flip-card {
+    background: var(--card-bg);
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.step-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 6px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+
+.flip-card h2 {
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-size: 22px;
+}
+
+.flip-card .subtitle {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+.flip-animation {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+}
+
+.page-icon {
+    position: absolute;
+    width: 70px;
+    height: 90px;
+    border-radius: 6px;
+    border: 2px solid var(--primary-color);
+    background: var(--input-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.page-back {
+    left: 10px;
+    top: 10px;
+    z-index: 1;
+    opacity: 0.5;
+}
+
+.page-front {
+    left: 30px;
+    top: 5px;
+    z-index: 2;
+    background: var(--card-bg);
+    animation: flipPage 2.5s ease-in-out infinite;
+}
+
+@keyframes flipPage {
+    0%, 100% {
+        transform: rotateY(0deg);
+    }
+    40%, 60% {
+        transform: rotateY(180deg);
+    }
+}
+
+.flip-arrow {
+    position: absolute;
+    right: 0;
+    top: 35px;
+    font-size: 36px;
+    color: var(--secondary-color);
+    animation: bounceArrow 1.5s ease-in-out infinite;
+}
+
+@keyframes bounceArrow {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    50% {
+        transform: translateX(8px);
+    }
+}
+
+.steps {
+    text-align: left;
+    margin: 0 auto 30px;
+    max-width: 440px;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.step:last-child {
+    border-bottom: none;
+}
+
+.step-number {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.step-text {
+    color: var(--text-color);
+    font-size: 14px;
+    line-height: 1.5;
+    padding-top: 3px;
+}
+
+.job-info {
+    background: var(--bg-color);
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 13px;
+}
+
+.job-info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.job-info-label {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.job-info-value {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.confirm-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.2s;
+    width: 100%;
+    max-width: 400px;
+}
+
+.confirm-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.confirm-btn:active {
+    transform: translateY(0);
+}
+
+.alert-info {
+    background: var(--info-bg);
+    color: var(--info-text);
+    border: 1px solid var(--info-border);
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 25px;
+    font-size: 13px;
+    text-align: left;
+}
+

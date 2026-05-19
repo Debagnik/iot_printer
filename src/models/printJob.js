@@ -137,7 +137,7 @@ async function getUserPrintJobs(userId) {
  * @returns {Promise<{lastID: number, changes: number}>}
  */
 async function updateJobStatus(jobId, status) {
-  const validStatuses = ['pending', 'in-progress', 'completed', 'failed'];
+  const validStatuses = ['pending', 'in-progress', 'completed', 'failed', 'cancelled'];
   
   if (!validStatuses.includes(status)) {
     throw new Error(`Invalid status: ${status}. Must be one of: ${validStatuses.join(', ')}`);
