@@ -4,201 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Print Configuration - Print Queue Manager</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+  <link rel="stylesheet" href="/style.css">
+  <script>
+    function toggleTheme() {
+      const current = localStorage.getItem('theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
     }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #f5f5f5;
-      min-height: 100vh;
-    }
-
-    header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    h1 {
-      font-size: 24px;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .logout-btn {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
-
-    .logout-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .config-card {
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .config-card h2 {
-      color: #333;
-      margin-bottom: 20px;
-      font-size: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: #333;
-      font-weight: 500;
-    }
-
-    select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-      background-color: white;
-      cursor: pointer;
-    }
-
-    select:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    .button-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 30px;
-    }
-
-    button {
-      flex: 1;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 4px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      opacity: 0.9;
-    }
-
-    .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
-    }
-
-    .btn-secondary:hover {
-      background: #e0e0e0;
-    }
-
-    .alert {
-      padding: 12px 16px;
-      border-radius: 4px;
-      margin-bottom: 20px;
-      font-size: 14px;
-    }
-
-    .alert-error {
-      background: #fee;
-      color: #c33;
-      border: 1px solid #fcc;
-    }
-
-    .alert-success {
-      background: #efe;
-      color: #3c3;
-      border: 1px solid #cfc;
-    }
-
-    .defaults-info {
-      background: #f9f9f9;
-      padding: 15px;
-      border-radius: 4px;
-      margin-top: 20px;
-      font-size: 13px;
-      color: #666;
-    }
-
-    .defaults-info strong {
-      color: #333;
-    }
-
-    @media (max-width: 600px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-
-      .button-group {
-        flex-direction: column;
-      }
-    }
-  </style>
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
 </head>
 <body>
   <header>
     <div class="header-content">
       <h1>Print Queue Manager</h1>
       <div class="user-info">
+        <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
         <span>Print Configuration</span>
         <a href="/logout" class="logout-btn">Logout</a>
       </div>
     </div>
   </header>
 
-  <div class="container">
+  <div class="container-md">
     <div class="config-card">
       <h2>Configure Print Settings</h2>
 
@@ -209,7 +39,7 @@
       <% if (success) { %>
         <div class="alert alert-success"><%= success %></div>
         <div style="margin-top: 20px; text-align: center;">
-          <a href="/submit-job" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 24px; border-radius: 4px; text-decoration: none; font-weight: 600;">Proceed to Submit Job</a>
+          <a href="/submit-job" class="btn-primary">Proceed to Submit Job</a>
         </div>
       <% } %>
 
@@ -266,17 +96,16 @@
         <div class="form-row">
           <div class="form-group">
             <label for="numCopies">Number of Copies</label>
-            <input type="number" id="numCopies" name="numCopies" min="1" max="99" value="<%= defaults.numCopies || 1 %>" required
-              style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+            <input type="number" id="numCopies" name="numCopies" min="1" max="99" value="<%= defaults.numCopies || 1 %>" required>
           </div>
 
           <div class="form-group">
             <label for="doubleSided">Double-Sided Printing</label>
             <div class="toggle-container">
-              <label class="toggle-switch">
+              <span class="toggle-switch">
                 <input type="checkbox" id="doubleSided" name="doubleSided" <%= defaults.doubleSided ? 'checked' : '' %>>
                 <span class="toggle-slider"></span>
-              </label>
+              </span>
               <span class="toggle-label" id="doubleSidedLabel">Off</span>
             </div>
           </div>
@@ -295,7 +124,7 @@
 
         <div class="button-group">
           <button type="submit" class="btn-primary">Save Settings</button>
-          <a href="/dashboard" class="btn-secondary" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">Back to Dashboard</a>
+          <a href="/dashboard" class="btn-secondary">Back to Dashboard</a>
         </div>
       </form>
       <% } %>
@@ -311,104 +140,6 @@
       </div>
     </div>
   </div>
-
-  <style>
-    .toggle-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 4px;
-    }
-
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 52px;
-      height: 28px;
-      margin-bottom: 0;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc;
-      border-radius: 28px;
-      transition: 0.3s;
-    }
-
-    .toggle-slider:before {
-      position: absolute;
-      content: "";
-      height: 22px;
-      width: 22px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      border-radius: 50%;
-      transition: 0.3s;
-    }
-
-    .toggle-switch input:checked + .toggle-slider {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .toggle-switch input:checked + .toggle-slider:before {
-      transform: translateX(24px);
-    }
-
-    .toggle-label {
-      font-size: 14px;
-      font-weight: 500;
-      color: #666;
-    }
-
-    .paper-estimate {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      background: linear-gradient(135deg, #e8eaf6 0%, #f3e5f5 100%);
-      padding: 18px 20px;
-      border-radius: 8px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-      border-left: 4px solid #667eea;
-    }
-
-    .estimate-icon {
-      font-size: 32px;
-    }
-
-    .estimate-details {
-      flex: 1;
-    }
-
-    .estimate-label {
-      font-size: 12px;
-      text-transform: uppercase;
-      color: #666;
-      margin-bottom: 4px;
-      font-weight: 600;
-    }
-
-    .estimate-value {
-      font-size: 28px;
-      font-weight: 700;
-      color: #333;
-    }
-
-    .estimate-breakdown {
-      font-size: 12px;
-      color: #888;
-      margin-top: 2px;
-    }
-  </style>
 
   <script>
     (function () {

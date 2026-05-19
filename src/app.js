@@ -72,6 +72,7 @@ app.post('/submit-job/confirm-flip', requireAuth, jobController.postConfirmFlip)
 app.post('/submit-job', requireAuth, jobController.postSubmitJob);
 app.get('/job/:jobId', requireAuth, jobController.getJobDetails);
 app.get('/api/job/:jobId/status', requireAuth, jobController.updateJobStatus);
+app.post('/api/job/:jobId/cancel', requireAuth, jobController.cancelJob);
 app.post('/api/cleanup', requireAuth, jobController.manualCleanup);
 
 // Scanner routes
@@ -82,6 +83,7 @@ app.delete('/scanner/delete/:fileName', requireAuth, scannerController.deleteSca
 
 // Admin routes
 app.get('/admin', requireAuth, requireAdmin, adminController.getAdminDashboard);
+app.get('/admin/print-queue', requireAuth, requireAdmin, adminController.getAdminPrintQueue);
 app.get('/api/admin/users', requireAuth, requireAdmin, adminController.getAllUsers);
 app.post('/api/admin/users', requireAuth, requireAdmin, adminController.createUser);
 app.delete('/api/admin/users/:userId', requireAuth, requireAdmin, adminController.deleteUser);
@@ -92,6 +94,9 @@ app.get('/api/admin/registration', requireAuth, requireAdmin, adminController.ge
 app.post('/api/admin/registration', requireAuth, requireAdmin, adminController.setRegistrationStatus);
 app.get('/api/admin/jobs', requireAuth, requireAdmin, adminController.getAllPrintJobs);
 app.delete('/api/admin/jobs/:jobId', requireAuth, requireAdmin, adminController.deletePrintJob);
+app.post('/api/admin/jobs/:jobId/cancel', requireAuth, requireAdmin, adminController.cancelPrintJobAdmin);
+app.post('/api/admin/jobs/cancel-all', requireAuth, requireAdmin, adminController.cancelAllPrintJobsAdmin);
+app.get('/api/admin/print-queue', requireAuth, requireAdmin, adminController.getSpoolQueueApi);
 app.post('/api/admin/cleanup', requireAuth, requireAdmin, adminController.cleanupJobFiles);
 app.get('/api/admin/scans', requireAuth, requireAdmin, adminController.getAllScanJobs);
 app.delete('/api/admin/scans/:scanId', requireAuth, requireAdmin, adminController.deleteScanJob);

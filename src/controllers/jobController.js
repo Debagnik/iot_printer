@@ -336,6 +336,48 @@ async function postConfirmFlip(req, res) {
   }
 }
 
+/**
+ * Cancel a print job (user cancels their own job)
+ */
+async function cancelJob(req, res) {
+  try {
+    const { jobId } = req.params;
+
+    if (!jobId || isNaN(jobId)) {
+      return res.status(400).json({ error: 'Invalid job ID' });
+    }
+
+    const job = await PrintJob.getPrintJob(parseInt(jobId, 10));
+
+    if (!job) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    // Verify user owns this job
+    if (job.userId !== req.session.userId) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    // Only cancel if pending or in-progress
+    if (job.status !== 'pending' && job.status !== 'in-progress') {
+      return res.status(400).json({ error: `Cannot cancel job with status: ${job.status}` });
+    }
+
+    // Cancel in OS spooler
+    const printerIntegration = require('../utils/printerIntegration');
+    const cancelResult = await printerIntegration.cancelPrintJob(job.id);
+    console.log(`[JOB] Cancel result for job ${jobId}:`, cancelResult);
+
+    // Update DB status
+    await PrintJob.updateJobStatus(parseInt(jobId, 10), 'cancelled');
+
+    res.json({ success: true, message: `Job ${jobId} cancelled successfully` });
+  } catch (err) {
+    console.error('Cancel job error:', err);
+    res.status(500).json({ error: 'Failed to cancel job' });
+  }
+}
+
 module.exports = {
   getSubmitJob,
   postSubmitJob,
@@ -343,5 +385,6 @@ module.exports = {
   getJobDetails,
   getDashboard,
   updateJobStatus,
-  manualCleanup
+  manualCleanup,
+  cancelJob
 };

@@ -319,6 +319,101 @@ async function setRegistrationStatus(req, res) {
   }
 }
 
+/**
+ * Display admin print queue page
+ */
+async function getAdminPrintQueue(req, res) {
+  try {
+    const printerIntegration = require('../utils/printerIntegration');
+    const jobs = await db.getAllPrintJobs();
+    const spoolQueue = await printerIntegration.getSpoolQueue();
+    const printerStatus = await printerIntegration.getPrinterStatus();
+
+    // Filter active jobs (pending/in-progress)
+    const activeJobs = jobs.filter(j => j.status === 'pending' || j.status === 'in-progress');
+
+    res.render('admin-print-queue', {
+      username: req.session.username,
+      userId: req.session.userId,
+      activeJobs,
+      allJobs: jobs,
+      spoolJobs: spoolQueue.jobs,
+      printerStatus,
+      error: null,
+      success: null
+    });
+  } catch (err) {
+    console.error('Admin print queue error:', err);
+    res.status(500).render('error', { error: 'Failed to load print queue' });
+  }
+}
+
+/**
+ * Get live spool queue data (API)
+ */
+async function getSpoolQueueApi(req, res) {
+  try {
+    const printerIntegration = require('../utils/printerIntegration');
+    const spoolQueue = await printerIntegration.getSpoolQueue();
+    const printerStatus = await printerIntegration.getPrinterStatus();
+    const jobs = await db.getAllPrintJobs();
+    const activeJobs = jobs.filter(j => j.status === 'pending' || j.status === 'in-progress');
+
+    res.json({ success: true, spoolJobs: spoolQueue.jobs, activeJobs, printerStatus });
+  } catch (err) {
+    console.error('Spool queue API error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+/**
+ * Cancel a single print job (admin, no ownership check)
+ */
+async function cancelPrintJobAdmin(req, res) {
+  try {
+    const { jobId } = req.params;
+    if (!jobId || isNaN(jobId)) {
+      return res.status(400).json({ success: false, error: 'Invalid job ID' });
+    }
+
+    const printerIntegration = require('../utils/printerIntegration');
+    const cancelResult = await printerIntegration.cancelPrintJob(jobId);
+    console.log(`[ADMIN] Cancel result for job ${jobId}:`, cancelResult);
+
+    // Update DB status
+    await db.updatePrintJobStatus(parseInt(jobId, 10), 'cancelled');
+
+    res.json({ success: true, message: `Job ${jobId} cancelled` });
+  } catch (err) {
+    console.error('Admin cancel job error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+/**
+ * Cancel all print jobs (admin)
+ */
+async function cancelAllPrintJobsAdmin(req, res) {
+  try {
+    const printerIntegration = require('../utils/printerIntegration');
+    const cancelResult = await printerIntegration.cancelAllPrintJobs();
+    console.log('[ADMIN] Cancel all result:', cancelResult);
+
+    // Update all active jobs in DB
+    const jobs = await db.getAllPrintJobs();
+    for (const job of jobs) {
+      if (job.status === 'pending' || job.status === 'in-progress') {
+        await db.updatePrintJobStatus(job.id, 'cancelled');
+      }
+    }
+
+    res.json({ success: true, message: 'All print jobs cancelled' });
+  } catch (err) {
+    console.error('Admin cancel all error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
 module.exports = {
   getAdminDashboard,
   getAllUsers,
@@ -333,5 +428,9 @@ module.exports = {
   getRegistrationStatus,
   setRegistrationStatus,
   getAllScanJobs,
-  deleteScanJob
+  deleteScanJob,
+  getAdminPrintQueue,
+  getSpoolQueueApi,
+  cancelPrintJobAdmin,
+  cancelAllPrintJobsAdmin
 };

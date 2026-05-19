@@ -69,6 +69,7 @@
               <th>Quality</th>
               <th>Color Mode</th>
               <th>Paper Size</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -99,6 +100,11 @@
                 </td>
                 <td>
                   <%= job.paperSize %>
+                </td>
+                <td>
+                  <% if (job.status === 'pending' || job.status === 'in-progress') { %>
+                    <button class="btn-danger btn-sm" data-job-id="<%= job.id %>" onclick="cancelMyJob(this.dataset.jobId)">Cancel</button>
+                  <% } %>
                 </td>
               </tr>
               <% }); %>
@@ -141,6 +147,23 @@
       });
     }
 
+    // Cancel a job
+    function cancelMyJob(jobId) {
+      if (!confirm('Are you sure you want to cancel this print job?')) return;
+
+      fetch(`/api/job/${jobId}/cancel`, { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            alert('Job cancelled successfully');
+            location.reload();
+          } else {
+            alert('Error: ' + (data.error || 'Failed to cancel'));
+          }
+        })
+        .catch(err => alert('Error: ' + err.message));
+    }
+
     // Run manual cleanup
     function runCleanup() {
       if (confirm('This will delete all files older than 24 hours. Continue?')) {
@@ -148,9 +171,7 @@
         btn.disabled = true;
         btn.textContent = 'Cleaning...';
 
-        fetch('/api/cleanup', {
-          method: 'POST'
-        })
+        fetch('/api/cleanup', { method: 'POST' })
           .then(response => response.json())
           .then(data => {
             alert(`Cleanup completed!\n\nDeleted:\n- ${data.details.uploadedDocs} uploaded documents\n- ${data.details.scannedDocs} scanned documents\n- ${data.details.printJobs} print jobs`);

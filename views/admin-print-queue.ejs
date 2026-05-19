@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Queue - Admin - Print Queue Manager</title>
+  <link rel="stylesheet" href="/style.css">
+  <script>
+    function toggleTheme() {
+      const current = localStorage.getItem('theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    }
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>Print Queue Management</h1>
+      <div class="user-info">
+        <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
+        <span>Welcome, <%= username %> (Admin)</span>
+        <a href="/logout" class="logout-btn">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Printer Status -->
+    <div class="queue-stats" id="statsRow">
+      <div class="stat-card">
+        <div class="stat-value" id="printerStatusValue"><%= printerStatus.status %></div>
+        <div class="stat-label">Printer Status</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="spoolCountValue"><%= spoolJobs.length %></div>
+        <div class="stat-label">Spooler Jobs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="activeCountValue"><%= activeJobs.length %></div>
+        <div class="stat-label">Active App Jobs</div>
+      </div>
+    </div>
+
+    <!-- Cancel All -->
+    <div class="queue-header">
+      <h2>Live Print Queue</h2>
+      <div>
+        <button class="btn-danger" onclick="cancelAllJobs()" id="cancelAllBtn">Cancel All Jobs</button>
+        <button class="btn-secondary" onclick="refreshQueue()" style="margin-left:8px;">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- OS Spooler Queue -->
+    <div class="queue-section">
+      <div class="card">
+        <h3>OS Spooler Queue</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Spool ID</th>
+              <th>Owner</th>
+              <th>Size</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="spoolTable">
+            <% if (spoolJobs.length > 0) { %>
+              <% spoolJobs.forEach(job => { %>
+                <tr>
+                  <td><%= job.spoolJobId %></td>
+                  <td><%= job.owner %></td>
+                  <td><%= job.size %></td>
+                  <td><%= job.submitted %></td>
+                  <td>
+                    <button class="btn-danger btn-sm" data-job-id="<%= job.jobId %>" onclick="cancelSpoolJob(this.dataset.jobId)">Cancel</button>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr><td colspan="5" style="text-align:center;">No jobs in OS spooler</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- App Active Jobs -->
+    <div class="queue-section">
+      <div class="card">
+        <h3>Application Queue (Pending / In-Progress)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Job ID</th>
+              <th>User</th>
+              <th>Document</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="appQueueTable">
+            <% if (activeJobs.length > 0) { %>
+              <% activeJobs.forEach(job => { %>
+                <tr>
+                  <td><%= job.id %></td>
+                  <td><%= job.username %></td>
+                  <td><%= job.documentName %></td>
+                  <td><span class="status-badge status-<%= job.status %>"><%= job.status %></span></td>
+                  <td><%= new Date(job.submittedAt).toLocaleString() %></td>
+                  <td>
+                    <button class="btn-danger btn-sm" data-job-id="<%= job.id %>" onclick="cancelAppJob(this.dataset.jobId)">Cancel</button>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr><td colspan="6" style="text-align:center;">No active jobs</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <a href="/admin" class="back-link">← Back to Admin Dashboard</a>
+  </div>
+
+  <script>
+    function cancelSpoolJob(jobId) {
+      if (!confirm('Cancel spooler job ' + jobId + '?')) return;
+      fetch('/api/admin/jobs/' + jobId + '/cancel', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) { alert('Cancelled'); location.reload(); }
+          else alert('Error: ' + data.error);
+        })
+        .catch(e => alert('Error: ' + e.message));
+    }
+
+    function cancelAppJob(jobId) {
+      if (!confirm('Cancel job ' + jobId + '?')) return;
+      fetch('/api/admin/jobs/' + jobId + '/cancel', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) { alert('Cancelled'); location.reload(); }
+          else alert('Error: ' + data.error);
+        })
+        .catch(e => alert('Error: ' + e.message));
+    }
+
+    function cancelAllJobs() {
+      if (!confirm('Cancel ALL print jobs? This cannot be undone.')) return;
+      const btn = document.getElementById('cancelAllBtn');
+      btn.disabled = true;
+      btn.textContent = 'Cancelling...';
+      fetch('/api/admin/jobs/cancel-all', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) { alert('All jobs cancelled'); location.reload(); }
+          else { alert('Error: ' + data.error); btn.disabled = false; btn.textContent = 'Cancel All Jobs'; }
+        })
+        .catch(e => { alert('Error: ' + e.message); btn.disabled = false; btn.textContent = 'Cancel All Jobs'; });
+    }
+
+    function refreshQueue() {
+      fetch('/api/admin/print-queue')
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('printerStatusValue').textContent = data.printerStatus.status;
+            document.getElementById('spoolCountValue').textContent = data.spoolJobs.length;
+            document.getElementById('activeCountValue').textContent = data.activeJobs.length;
+          }
+        })
+        .catch(e => console.error('Refresh error:', e));
+    }
+
+    // Auto-refresh every 5 seconds
+    setInterval(refreshQueue, 5000);
+  </script>
+</body>
+</html>
