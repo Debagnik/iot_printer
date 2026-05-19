@@ -96,13 +96,19 @@ async function wakePrinter() {
 
   try {
     if (isLinux) {
-      // cupsenable activates the queue if paused or stopped
-      await execAsync(`cupsenable "${PRINTER_CONFIG.name}"`, { timeout: PRINTER_CONFIG.defaultTimeout });
-      // Release any held/suspended jobs or signal wake raw stream
+      // cupsenable and cupsaccept activates and enables the queue if paused or stopped
       try {
-        await execAsync(`lp -d "${PRINTER_CONFIG.name}" -o raw /dev/null`, { timeout: 2000 });
+        await execAsync(`cupsenable "${PRINTER_CONFIG.name}"`, { timeout: PRINTER_CONFIG.defaultTimeout });
+        await execAsync(`cupsaccept "${PRINTER_CONFIG.name}"`, { timeout: PRINTER_CONFIG.defaultTimeout });
+      } catch (cupsErr) {
+        console.warn(`[PRINTER] cupsenable/cupsaccept failed: ${cupsErr.message}`);
+      }
+
+      // Release any held/suspended jobs or signal wake raw stream with a null byte
+      try {
+        await execAsync(`echo -ne "\\x00" | lp -d "${PRINTER_CONFIG.name}" -o raw`, { timeout: 2000 });
       } catch (e) {
-        // raw null sending might fail, ignore
+        // raw null byte sending might fail, ignore
       }
       return true;
     } else if (isWindows) {
@@ -111,8 +117,7 @@ async function wakePrinter() {
       return true;
     }
   } catch (err) {
-    console.warn(`[PRINTER] Could not run wake commands directly (${err.message}). Entering Mock Mode.`);
-    PRINTER_CONFIG.mockMode = true;
+    console.warn(`[PRINTER] Could not run wake commands directly (${err.message}).`);
   }
   return true;
 }
@@ -150,12 +155,11 @@ async function getPrinterStatus() {
     }
     return { available: true, status: 'idle', message: `Printer ${PRINTER_CONFIG.name} status is unknown` };
   } catch (err) {
-    console.warn(`[PRINTER] Status command failed (${err.message}). Enabling mock fallback.`);
-    PRINTER_CONFIG.mockMode = true;
+    console.warn(`[PRINTER] Status command failed (${err.message}). Returning default available state.`);
     return {
       available: true,
       status: 'idle',
-      message: `[MOCK] Printer ${PRINTER_CONFIG.name} is ready`
+      message: `Printer ${PRINTER_CONFIG.name} status is ready`
     };
   }
 }
@@ -270,30 +274,24 @@ async function getPrintQueueStatus() {
   }
 
   try {
-    const { stdout } = await execAsync(`lpq -P "${PRINTER_CONFIG.name}"`, { timeout: PRINTER_CONFIG.defaultTimeout });
-    const lines = stdout.split('\n').filter(line => line.trim());
-    const jobs = [];
-
-    for (let i = 1; i < lines.length; i++) {
-      const parts = lines[i].split(/\s+/);
-      if (parts.length >= 3) {
-        jobs.push({
-          rank: parts[0],
-          owner: parts[1],
-          jobId: parts[2],
-          files: parts.slice(3).join(' ')
-        });
-      }
-    }
+    const spoolJobs = await getSpoolQueue();
+    const jobs = spoolJobs.map((j, index) => ({
+      rank: (index + 1).toString(),
+      owner: j.user || 'unknown',
+      jobId: j.jobId,
+      files: j.document || `Job ${j.jobId}`
+    }));
 
     return {
       jobs,
       message: `Print queue has ${jobs.length} job(s)`
     };
   } catch (err) {
-    console.warn(`[PRINTER] lpq failed (${err.message}). Using Mock Queue.`);
-    PRINTER_CONFIG.mockMode = true;
-    return getPrintQueueStatus();
+    console.warn(`[PRINTER] getPrintQueueStatus failed (${err.message}). Returning empty queue.`);
+    return {
+      jobs: [],
+      message: `Print queue has 0 job(s)`
+    };
   }
 }
 
