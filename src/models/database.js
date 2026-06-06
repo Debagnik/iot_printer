@@ -1,169 +1,109 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const mysql = require('mysql2/promise');
 
-// Database file path
-const DB_PATH = path.join(__dirname, '../../data/print_queue.db');
-
-// Create a single database connection with connection pooling
-let db = null;
+// Connection pool reference
+let pool = null;
 
 /**
  * Initialize database connection and create tables if they don't exist
- * @returns {Promise<sqlite3.Database>}
+ * @returns {Promise<mysql.Pool>}
  */
-function initializeDatabase() {
-  return new Promise((resolve, reject) => {
-    if (db) {
-      resolve(db);
-      return;
-    }
+async function initializeDatabase() {
+  if (pool) {
+    return pool;
+  }
 
-    db = new sqlite3.Database(DB_PATH, (err) => {
-      if (err) {
-        reject(new Error(`Failed to connect to database: ${err.message}`));
-        return;
-      }
-
-      // Enable foreign keys
-      db.run('PRAGMA foreign_keys = ON', (err) => {
-        if (err) {
-          reject(new Error(`Failed to enable foreign keys: ${err.message}`));
-          return;
-        }
-
-        createTables()
-          .then(() => resolve(db))
-          .catch(reject);
-      });
-    });
+  pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || '3306', 10),
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'print_queue',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
   });
+
+  // Verify connection by getting a connection from pool
+  try {
+    const connection = await pool.getConnection();
+    connection.release();
+    
+    // Create tables
+    await createTables();
+    return pool;
+  } catch (err) {
+    pool = null;
+    throw new Error(`Failed to connect to database: ${err.message}`);
+  }
 }
 
 /**
  * Create all required tables
  * @returns {Promise<void>}
  */
-function createTables() {
-  return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      // User table
-      db.run(`
-        CREATE TABLE IF NOT EXISTS User (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          username TEXT UNIQUE NOT NULL,
-          passwordHash TEXT NOT NULL,
-          role TEXT DEFAULT 'USER',
-          enabled INTEGER DEFAULT 1,
-          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-      `, (err) => {
-        if (err) {
-          reject(new Error(`Failed to create User table: ${err.message}`));
-          return;
-        }
+async function createTables() {
+  // User table
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS User (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      username VARCHAR(255) UNIQUE NOT NULL,
+      passwordHash VARCHAR(255) NOT NULL,
+      role VARCHAR(50) DEFAULT 'USER',
+      enabled TINYINT DEFAULT 1,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB
+  `);
 
-        // Migrate existing User table to add missing columns
-        db.all("PRAGMA table_info(User)", (err, columns) => {
-          if (err) {
-            console.warn('Could not check User table schema:', err.message);
-            return;
-          }
+  // PrintJob table
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS PrintJob (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      userId INT NOT NULL,
+      documentName VARCHAR(255) NOT NULL,
+      documentPath VARCHAR(512) NOT NULL,
+      paperType VARCHAR(100) DEFAULT 'Plain Paper',
+      printQuality VARCHAR(50) DEFAULT '600',
+      colorMode VARCHAR(50) DEFAULT 'Grayscale',
+      paperSize VARCHAR(50) DEFAULT 'A4',
+      status VARCHAR(50) DEFAULT 'pending',
+      submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      completedAt DATETIME,
+      FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB
+  `);
 
-          const columnNames = columns.map(col => col.name);
+  // Session table
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS Session (
+      sessionId VARCHAR(255) PRIMARY KEY,
+      userId INT NOT NULL,
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      expiresAt DATETIME,
+      FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB
+  `);
 
-          // Add role column if it doesn't exist
-          if (!columnNames.includes('role')) {
-            db.run(`ALTER TABLE User ADD COLUMN role TEXT DEFAULT 'USER'`, (err) => {
-              if (err && !err.message.includes('duplicate column')) {
-                console.warn('Could not add role column:', err.message);
-              }
-            });
-          }
+  // ScanJob table
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS ScanJob (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      userId INT NOT NULL,
+      fileName VARCHAR(255) NOT NULL,
+      filePath VARCHAR(512) NOT NULL,
+      status VARCHAR(50) DEFAULT 'completed',
+      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB
+  `);
 
-          // Add enabled column if it doesn't exist
-          if (!columnNames.includes('enabled')) {
-            db.run(`ALTER TABLE User ADD COLUMN enabled INTEGER DEFAULT 1`, (err) => {
-              if (err && !err.message.includes('duplicate column')) {
-                console.warn('Could not add enabled column:', err.message);
-              }
-            });
-          }
-        });
-      });
-
-      // PrintJob table
-      db.run(`
-        CREATE TABLE IF NOT EXISTS PrintJob (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          userId INTEGER NOT NULL,
-          documentName TEXT NOT NULL,
-          documentPath TEXT NOT NULL,
-          paperType TEXT DEFAULT 'Plain Paper',
-          printQuality INTEGER DEFAULT 600,
-          colorMode TEXT DEFAULT 'Grayscale',
-          paperSize TEXT DEFAULT 'A4',
-          status TEXT DEFAULT 'pending',
-          submittedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-          completedAt DATETIME,
-          FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
-        )
-      `, (err) => {
-        if (err) {
-          reject(new Error(`Failed to create PrintJob table: ${err.message}`));
-          return;
-        }
-      });
-
-      // Session table
-      db.run(`
-        CREATE TABLE IF NOT EXISTS Session (
-          sessionId TEXT PRIMARY KEY,
-          userId INTEGER NOT NULL,
-          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-          expiresAt DATETIME,
-          FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
-        )
-      `, (err) => {
-        if (err) {
-          reject(new Error(`Failed to create Session table: ${err.message}`));
-          return;
-        }
-      });
-
-      // ScanJob table
-      db.run(`
-        CREATE TABLE IF NOT EXISTS ScanJob (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          userId INTEGER NOT NULL,
-          fileName TEXT NOT NULL,
-          filePath TEXT NOT NULL,
-          status TEXT DEFAULT 'completed',
-          createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (userId) REFERENCES User(id) ON DELETE CASCADE
-        )
-      `, (err) => {
-        if (err) {
-          reject(new Error(`Failed to create ScanJob table: ${err.message}`));
-          return;
-        }
-      });
-
-      // Settings table for system-wide configuration
-      db.run(`
-        CREATE TABLE IF NOT EXISTS Settings (
-          key TEXT PRIMARY KEY,
-          value TEXT,
-          updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-      `, (err) => {
-        if (err) {
-          reject(new Error(`Failed to create Settings table: ${err.message}`));
-          return;
-        }
-        resolve();
-      });
-    });
-  });
+  // Settings table for system-wide configuration
+  await pool.execute(`
+    CREATE TABLE IF NOT EXISTS Settings (
+      \`key\` VARCHAR(255) PRIMARY KEY,
+      value TEXT,
+      updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB
+  `);
 }
 
 /**
@@ -172,21 +112,12 @@ function createTables() {
  * @param {Array} params - Query parameters
  * @returns {Promise<any>}
  */
-function query(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    if (!db) {
-      reject(new Error('Database not initialized'));
-      return;
-    }
-
-    db.all(sql, params, (err, rows) => {
-      if (err) {
-        reject(new Error(`Query failed: ${err.message}`));
-      } else {
-        resolve(rows || []);
-      }
-    });
-  });
+async function query(sql, params = []) {
+  if (!pool) {
+    throw new Error('Database not initialized');
+  }
+  const [rows] = await pool.execute(sql, params);
+  return rows || [];
 }
 
 /**
@@ -195,21 +126,12 @@ function query(sql, params = []) {
  * @param {Array} params - Query parameters
  * @returns {Promise<any>}
  */
-function queryOne(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    if (!db) {
-      reject(new Error('Database not initialized'));
-      return;
-    }
-
-    db.get(sql, params, (err, row) => {
-      if (err) {
-        reject(new Error(`Query failed: ${err.message}`));
-      } else {
-        resolve(row || null);
-      }
-    });
-  });
+async function queryOne(sql, params = []) {
+  if (!pool) {
+    throw new Error('Database not initialized');
+  }
+  const [rows] = await pool.execute(sql, params);
+  return rows && rows.length > 0 ? rows[0] : null;
 }
 
 /**
@@ -218,24 +140,15 @@ function queryOne(sql, params = []) {
  * @param {Array} params - Query parameters
  * @returns {Promise<{lastID: number, changes: number}>}
  */
-function run(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    if (!db) {
-      reject(new Error('Database not initialized'));
-      return;
-    }
-
-    db.run(sql, params, function (err) {
-      if (err) {
-        reject(new Error(`Query failed: ${err.message}`));
-      } else {
-        resolve({
-          lastID: this.lastID,
-          changes: this.changes
-        });
-      }
-    });
-  });
+async function run(sql, params = []) {
+  if (!pool) {
+    throw new Error('Database not initialized');
+  }
+  const [result] = await pool.execute(sql, params);
+  return {
+    lastID: result.insertId,
+    changes: result.affectedRows
+  };
 }
 
 /**
@@ -344,22 +257,12 @@ function completePrintJob(jobId) {
  * Close database connection
  * @returns {Promise<void>}
  */
-function closeDatabase() {
-  return new Promise((resolve, reject) => {
-    if (!db) {
-      resolve();
-      return;
-    }
-
-    db.close((err) => {
-      if (err) {
-        reject(new Error(`Failed to close database: ${err.message}`));
-      } else {
-        db = null;
-        resolve();
-      }
-    });
-  });
+async function closeDatabase() {
+  if (!pool) {
+    return;
+  }
+  await pool.end();
+  pool = null;
 }
 
 /**
@@ -436,7 +339,7 @@ function updateUserEnabled(userId, enabled) {
  * @returns {Promise<any>}
  */
 function getSetting(key) {
-  return queryOne('SELECT value FROM Settings WHERE key = ?', [key]);
+  return queryOne('SELECT value FROM Settings WHERE `key` = ?', [key]);
 }
 
 /**
@@ -447,7 +350,7 @@ function getSetting(key) {
  */
 function setSetting(key, value) {
   return run(
-    'INSERT OR REPLACE INTO Settings (key, value, updatedAt) VALUES (?, ?, CURRENT_TIMESTAMP)',
+    'REPLACE INTO Settings (`key`, value, updatedAt) VALUES (?, ?, CURRENT_TIMESTAMP)',
     [key, value]
   );
 }
@@ -537,6 +440,6 @@ module.exports = {
   deleteScanJob,
   getScanJob,
   get db() {
-    return db;
+    return pool;
   }
 };
