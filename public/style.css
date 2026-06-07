@@ -198,17 +198,28 @@ tr:hover {
 /* Dark Mode Toggle */
 .theme-toggle {
     background: none;
-    border: 1px solid var(--header-text);
-    color: var(--header-text);
-    padding: 5px 10px;
+    border: 1px solid var(--text-color);
+    color: var(--text-color);
+    padding: 5px 15px;
     cursor: pointer;
     border-radius: 20px;
     font-size: 12px;
+    transition: all 0.2s;
+}
+
+header .theme-toggle {
+    border-color: var(--header-text);
+    color: var(--header-text);
     margin-right: 15px;
 }
 
 .theme-toggle:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(128, 128, 128, 0.1);
+    transform: translateY(-1px);
+}
+
+header .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.15);
     transform: none;
     box-shadow: none;
 }
