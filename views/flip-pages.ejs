@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flip Pages - Print Queue Manager</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/theme.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,7 +16,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f5f5;
+            background: var(--bg-color);
+            color: var(--text-color);
             min-height: 100vh;
         }
 
@@ -65,7 +68,8 @@
         }
 
         .flip-card {
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-color);
             padding: 40px 30px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -85,13 +89,14 @@
         }
 
         .flip-card h2 {
-            color: #333;
+            color: var(--text-color);
             margin-bottom: 8px;
             font-size: 22px;
         }
 
         .flip-card .subtitle {
-            color: #888;
+            color: var(--text-color);
+            opacity: 0.8;
             font-size: 14px;
             margin-bottom: 30px;
         }
@@ -109,14 +114,14 @@
             width: 70px;
             height: 90px;
             border-radius: 6px;
-            border: 2px solid #667eea;
-            background: #f0f0ff;
+            border: 2px solid var(--primary-color);
+            background: var(--bg-color);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 14px;
             font-weight: 700;
-            color: #667eea;
+            color: var(--primary-color);
         }
 
         .page-back {
@@ -130,7 +135,7 @@
             left: 30px;
             top: 5px;
             z-index: 2;
-            background: white;
+            background: var(--card-bg);
             animation: flipPage 2.5s ease-in-out infinite;
         }
 
@@ -152,7 +157,7 @@
             right: 0;
             top: 35px;
             font-size: 36px;
-            color: #764ba2;
+            color: var(--secondary-color);
             animation: bounceArrow 1.5s ease-in-out infinite;
         }
 
@@ -180,7 +185,7 @@
             align-items: flex-start;
             gap: 14px;
             padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .step:last-child {
@@ -202,7 +207,7 @@
         }
 
         .step-text {
-            color: #444;
+            color: var(--text-color);
             font-size: 14px;
             line-height: 1.5;
             padding-top: 3px;
@@ -210,7 +215,7 @@
 
         /* Job info */
         .job-info {
-            background: #f9f9f9;
+            background: var(--bg-color);
             padding: 16px 20px;
             border-radius: 8px;
             margin-bottom: 30px;
@@ -235,7 +240,7 @@
         }
 
         .job-info-value {
-            color: #333;
+            color: var(--text-color);
             font-weight: 600;
         }
 
@@ -293,6 +298,7 @@
         <div class="header-content">
             <h1>Print Queue Manager</h1>
             <div class="user-info">
+                <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
                 <span>Double-Sided Print</span>
                 <a href="/logout" class="logout-btn">Logout</a>
             </div>

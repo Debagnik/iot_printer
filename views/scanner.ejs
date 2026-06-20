@@ -6,16 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Scanner - Print Queue Manager</title>
   <link rel="stylesheet" href="/style.css">
-  <script>
-    function toggleTheme() {
-      const current = localStorage.getItem('theme') || 'light';
-      const next = current === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-    }
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  </script>
+  <script src="/theme.js"></script>
 </head>
 
 <body>
@@ -23,8 +14,7 @@
     <div class="header-content">
       <h1>Print Queue Manager</h1>
       <div class="user-info">
-        <button class="theme-toggle" onclick="toggleTheme()"
-          style="background:none; border:1px solid currentColor; padding: 4px 10px;">Theme</button>
+        <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
         <span>Welcome, <%= username %></span>
         <a href="/logout" class="logout-btn">Logout</a>
       </div>

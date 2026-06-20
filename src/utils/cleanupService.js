@@ -81,12 +81,7 @@ async function cleanupScannedDocuments() {
     const oneDayAgo = new Date(Date.now() - ONE_DAY_MS).toISOString();
 
     // Find old scans
-    const oldScans = await new Promise((resolve, reject) => {
-      db.db.all('SELECT * FROM ScanJob WHERE createdAt < ?', [oneDayAgo], (err, rows) => {
-        if (err) reject(err);
-        else resolve(rows || []);
-      });
-    });
+    const oldScans = await db.query('SELECT * FROM ScanJob WHERE createdAt < ?', [oneDayAgo]);
 
     let deletedCount = 0;
     for (const scan of oldScans) {
@@ -123,19 +118,11 @@ async function cleanupOldPrintJobs() {
     const oneDayAgo = new Date(Date.now() - ONE_DAY_MS).toISOString();
 
     // Delete print jobs older than 1 day
-    const result = await new Promise((resolve, reject) => {
-      db.db.run(
-        'DELETE FROM PrintJob WHERE submittedAt < ?',
-        [oneDayAgo],
-        function (err) {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(this.changes);
-          }
-        }
-      );
-    });
+    const runResult = await db.run(
+      'DELETE FROM PrintJob WHERE submittedAt < ?',
+      [oneDayAgo]
+    );
+    const result = runResult.changes;
 
     console.log(`[CLEANUP] Cleanup of print jobs completed. Deleted: ${result}`);
     return {

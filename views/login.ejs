@@ -6,26 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - Print Queue Manager</title>
   <link rel="stylesheet" href="/style.css">
-  <script>
-    // Theme toggle logic
-    function toggleTheme() {
-      const current = localStorage.getItem('theme') || 'light';
-      const next = current === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', next);
-      localStorage.setItem('theme', next);
-    }
-
-    // Init theme
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-  </script>
+  <script src="/theme.js"></script>
 </head>
 
 <body>
   <div class="login-container">
     <div style="text-align: right; margin-bottom: 20px;">
-      <button class="theme-toggle" onclick="toggleTheme()"
-        style="background:var(--text-color); color:var(--bg-color)">Theme</button>
+      <button class="theme-toggle" onclick="toggleTheme()">Theme</button>
     </div>
     <h1>Print Queue Manager</h1>
 
