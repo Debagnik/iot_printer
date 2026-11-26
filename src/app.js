@@ -11,6 +11,7 @@ const configController = require('./controllers/configController');
 const jobController = require('./controllers/jobController');
 const scannerController = require('./controllers/scannerController');
 const adminController = require('./controllers/adminController');
+const healthController = require('./controllers/healthController');
 const upload = require('./middleware/multerConfig');
 const { requireAuth, requireGuest } = require('./middleware/auth');
 const { requireAdmin } = require('./middleware/adminAuth');
@@ -95,6 +96,9 @@ app.delete('/api/admin/jobs/:jobId', requireAuth, requireAdmin, adminController.
 app.post('/api/admin/cleanup', requireAuth, requireAdmin, adminController.cleanupJobFiles);
 app.get('/api/admin/scans', requireAuth, requireAdmin, adminController.getAllScanJobs);
 app.delete('/api/admin/scans/:scanId', requireAuth, requireAdmin, adminController.deleteScanJob);
+
+// Health check route
+app.get('/healthz', healthController.getHealthz);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
